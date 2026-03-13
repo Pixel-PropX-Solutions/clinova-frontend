@@ -20,7 +20,11 @@ export const useAuthMutation = () => {
             console.log(data)
             setAuth(data.access_token, data.role);
             toast.success('Login successful');
-            data.role === 'admin' ? router.push('/admin') : router.push('/dashboard');
+            if (data.role === 'admin') {
+                router.push('/admin');
+            } else {
+                router.push('/dashboard');
+            }
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.detail || 'Login failed. Please check credentials.');

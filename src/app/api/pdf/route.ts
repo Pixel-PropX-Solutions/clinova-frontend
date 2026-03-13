@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
+import fs from 'node:fs';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,6 @@ const getLocalExecutablePath = () => {
       'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
       'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
     ];
-    const fs = require('fs');
     return paths.find(p => fs.existsSync(p));
   }
   return null;
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     let executablePath = await chromium.executablePath();
-    
+
     // Fallback for local development (Windows/macOS)
     if (!executablePath || process.env.NODE_ENV === 'development') {
       const localPath = getLocalExecutablePath();
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     });
 
     const page = await browser.newPage();
-    
+
     // Set content and wait for it to load
     await page.setContent(html, { waitUntil: 'networkidle0' });
 

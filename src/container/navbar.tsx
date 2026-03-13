@@ -44,7 +44,7 @@ const Navbar = () => {
          <Typography
             variant='h6'
             sx={{ my: 2 }}>
-            Omkary's Clinic
+            Omkary&apos;s Clinic
          </Typography>
          <List>
             {navLinks.map((link) => (
@@ -105,7 +105,7 @@ const Navbar = () => {
                   <Link
                      href='/'
                      style={{ textDecoration: 'none', color: 'inherit' }}>
-                     Omkary's Clinic
+                     Omkary&apos;s Clinic
                   </Link>
                </Typography>
             </Box>
@@ -128,7 +128,7 @@ const Navbar = () => {
                      </Drawer>
                   </>
                   // Desktop Menu
-               :  <Box
+                  : <Box
                      display='flex'
                      gap={2}
                      alignItems='center'>

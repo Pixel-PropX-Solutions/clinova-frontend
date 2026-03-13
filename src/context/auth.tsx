@@ -33,7 +33,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       };
 
       initializeAuth();
-   }, []);
+   }, [logout, role, setAuth, token]);
 
    useEffect(() => {
       if (isInitializing) return;
@@ -41,7 +41,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       if (!token) {
          if (
             pathname !== '/' &&
-            
+
             !pathname.startsWith('/forgot-password')
          ) {
             router.push('/');

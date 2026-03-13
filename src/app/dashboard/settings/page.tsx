@@ -101,7 +101,7 @@ export default function SettingsPage() {
             if (defaultT) setPreviewTemplate(defaultT);
          }
       }
-   }, [clinic, templates]);
+   }, [clinic, templates, previewTemplate]);
 
    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
       setTabValue(newValue);
@@ -592,7 +592,7 @@ export default function SettingsPage() {
                               sx={{
                                  flexGrow: 1,
                                  display: 'flex',
-                                  height: '100%',
+                                 height: '100%',
                                  justifyContent: 'center',
                                  alignItems: 'flex-start',
                                  overflow: 'auto',
@@ -604,7 +604,7 @@ export default function SettingsPage() {
                                     elevation={10}
                                     sx={{
                                        width: '100%',
-                                        height: '100%',
+                                       height: '100%',
                                        minHeight: '100%',
                                        bgcolor: '#fff',
                                        borderRadius: 2,

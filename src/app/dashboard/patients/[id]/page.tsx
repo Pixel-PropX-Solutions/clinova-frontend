@@ -210,7 +210,7 @@ export default function PatientProfilePage() {
                                  new Date(patient.first_visit_date),
                                  'dd MMM yyyy',
                               )
-                           :  'N/A'}
+                              : 'N/A'}
                         </Typography>
                      </Box>
                   </Box>
@@ -294,7 +294,7 @@ export default function PatientProfilePage() {
                      color='warning.main'>
                      {patient.last_visit_date ?
                         format(new Date(patient.last_visit_date), 'dd MMM')
-                     :  'N/A'}
+                        : 'N/A'}
                   </Typography>
                   <Typography
                      variant='body2'
@@ -358,12 +358,12 @@ export default function PatientProfilePage() {
                                        new Date(visit.visited_at),
                                        'dd MMM yyyy, hh:mm a',
                                     )
-                                 : visit.created_at ?
-                                    format(
-                                       new Date(visit.created_at),
-                                       'dd MMM yyyy, hh:mm a',
-                                    )
-                                 :  'N/A'}
+                                    : visit.created_at ?
+                                       format(
+                                          new Date(visit.created_at),
+                                          'dd MMM yyyy, hh:mm a',
+                                       )
+                                       : 'N/A'}
                               </TableCell>
                               <TableCell>{visit.dr_name || '-'}</TableCell>
                               <TableCell>
@@ -380,9 +380,9 @@ export default function PatientProfilePage() {
                                     color={
                                        visit.payment_method === 'UPI' ?
                                           'secondary'
-                                       : visit.payment_method === 'Card' ?
-                                          'info'
-                                       :  'default'
+                                          : visit.payment_method === 'Card' ?
+                                             'info'
+                                             : 'default'
                                     }
                                  />
                               </TableCell>
@@ -418,7 +418,7 @@ export default function PatientProfilePage() {
                               </TableCell>
                            </TableRow>
                         ))
-                     :  <TableRow>
+                        : <TableRow>
                            <TableCell
                               colSpan={7}
                               align='center'
@@ -445,7 +445,7 @@ export default function PatientProfilePage() {
             <DialogContent>
                <DialogContentText>
                   Are you sure you want to delete this visit record? This action
-                  cannot be undone and will update the patient's visit history.
+                  cannot be undone and will update the patient&apos;s visit history.
                </DialogContentText>
             </DialogContent>
             <DialogActions sx={{ p: 2, pt: 0 }}>

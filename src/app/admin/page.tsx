@@ -22,8 +22,26 @@ import {
    Avatar,
    Grid,
    Divider,
+   Stack,
+   Card,
+   Chip,
 } from '@mui/material';
-import { Add, Visibility, Block, CheckCircle, PhotoCamera, TrendingUp, PeopleOutline, AttachMoney } from '@mui/icons-material';
+import { 
+   Plus, 
+   Eye, 
+   ShieldAlert, 
+   CheckCircle2, 
+   Camera, 
+   TrendingUp, 
+   Users, 
+   IndianRupee,
+   Building2,
+   Phone,
+   Mail,
+   MapPin,
+   ChevronRight,
+   Calendar1Icon,
+} from 'lucide-react';
 import { useClinics, useCreateClinic, useUpdateClinic, useClinicStats, useUploadClinicLogo } from '@/hooks/api/useClinics';
 import { toast } from 'react-toastify';
 import {
@@ -36,6 +54,8 @@ import {
    CartesianGrid,
    LineChart,
    Line,
+   AreaChart,
+   Area,
 } from 'recharts';
 import { format } from 'date-fns';
 
@@ -78,9 +98,6 @@ export default function ClinicsPage() {
          if (clinicId) {
             uploadLogo.mutate({ id: clinicId, file });
          } else {
-            // For new clinic, we'll need to store the file or upload first
-            // For now, let's keep it simple and only allow logo upload for existing clinics
-            // or just use the URL for new ones as before.
             toast.info("Please create the clinic first, then upload the logo from details.");
          }
       }
@@ -110,194 +127,219 @@ export default function ClinicsPage() {
    };
 
    return (
-      <Box>
+      <Box maxWidth="xl" mx="auto">
          <Box
             display='flex'
             justifyContent='space-between'
             alignItems='center'
-            mb={4}>
-            <Typography
-               variant='h4'
-               fontWeight='bold'>
-               Manage Clinics
-            </Typography>
+            mb={5}
+            flexWrap="wrap"
+            gap={2}>
+            <Box>
+               <Typography
+                  variant='h4'
+                  fontWeight='800'
+                  color="primary"
+                  gutterBottom>
+                  Clinic Governance
+               </Typography>
+               <Typography variant='body1' color='text.secondary'>
+                  High-level orchestration of multi-clinic operations and subscription tiers.
+               </Typography>
+            </Box>
             <Button
                variant='contained'
-               startIcon={<Add />}
-               onClick={() => setOpen(true)}>
-               Add Clinic
+               startIcon={<Plus size={18} />}
+               onClick={() => setOpen(true)}
+               sx={{ borderRadius: '12px', height: 48, px: 3 }}>
+               Provision New Clinic
             </Button>
          </Box>
 
          {isLoading ?
-            <CircularProgress />
-         :  <TableContainer
-               component={Paper}
-               elevation={2}
-               sx={{ borderRadius: 2 }}>
-               <Table>
-                  <TableHead sx={{ bgcolor: 'grey.100' }}>
-                     <TableRow>
-                        <TableCell>
-                           <b>Name</b>
-                        </TableCell>
-                        <TableCell>
-                           <b>Email</b>
-                        </TableCell>
-                        <TableCell>
-                           <b>Phone</b>
-                        </TableCell>
-                        <TableCell>
-                           <b>Address</b>
-                        </TableCell>
-                        <TableCell>
-                           <b>Plan</b>
-                        </TableCell>
-                        <TableCell>
-                           <b>Status</b>
-                        </TableCell>
-                        <TableCell align='right'>
-                           <b>Actions</b>
-                        </TableCell>
-                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                     {Array.isArray(clinics) && clinics.length > 0 ?
-                        clinics.map((clinic: any) => (
-                           <TableRow key={clinic._id}>
-                              <TableCell>{clinic.name}</TableCell>
-                              <TableCell>{clinic.email}</TableCell>
-                              <TableCell>{clinic.phone}</TableCell>
-                              <TableCell>{clinic.address}</TableCell>
-                              <TableCell sx={{ textTransform: 'capitalize' }}>
-                                 {clinic.plan}
-                              </TableCell>
-                              <TableCell>
-                                 {clinic.is_active ? 
-                                    <Typography color="success.main" variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                       <CheckCircle fontSize="small" /> Active
-                                    </Typography> : 
-                                    <Typography color="error.main" variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                       <Block fontSize="small" /> Restricted
+            <Box display="flex" justifyContent="center" py={10}>
+               <CircularProgress thickness={4} />
+            </Box>
+         :  <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
+               <TableContainer>
+                  <Table>
+                     <TableHead sx={{ bgcolor: '#F8FAFC' }}>
+                        <TableRow>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2 }}>CLINIC IDENTITY</TableCell>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>CONTACT INFRASTRUCTURE</TableCell>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>LOCATION</TableCell>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>SERVICE TIER</TableCell>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>OPERATIONAL STATUS</TableCell>
+                           <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>ORCHESTRATION</TableCell>
+                        </TableRow>
+                     </TableHead>
+                     <TableBody>
+                        {Array.isArray(clinics) && clinics.length > 0 ?
+                           clinics.map((clinic: any) => (
+                              <TableRow key={clinic._id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                 <TableCell>
+                                    <Stack direction="row" spacing={2} alignItems="center">
+                                       <Avatar src={clinic.logo_url} sx={{ bgcolor: '#F1F5F9', color: '#2F5FA5', fontWeight: 'bold' }}>
+                                          {clinic.name.charAt(0).toUpperCase()}
+                                       </Avatar>
+                                       <Typography variant='subtitle2' fontWeight='700' color="#0F172A">
+                                          {clinic.name}
+                                       </Typography>
+                                    </Stack>
+                                 </TableCell>
+                                 <TableCell>
+                                    <Typography variant="body2" color="#0F172A" fontWeight="600">{clinic.email}</Typography>
+                                    <Typography variant="caption" color="textSecondary">{clinic.phone}</Typography>
+                                 </TableCell>
+                                 <TableCell>
+                                    <Typography variant="body2" color="#475569" sx={{ maxWidth: 200 }} noWrap title={clinic.address}>
+                                       {clinic.address}
                                     </Typography>
-                                 }
-                              </TableCell>
-                              <TableCell align='right'>
-                                 <IconButton 
-                                    color="primary" 
-                                    size="small"
-                                    onClick={() => {
-                                       setSelectedClinic(clinic);
-                                       setDetailsOpen(true);
-                                    }}
-                                 >
-                                    <Visibility fontSize="small" />
-                                 </IconButton>
-                                 <IconButton 
-                                    color={clinic.is_active ? "error" : "success"}
-                                    size="small"
-                                    onClick={() => handleToggleStatus(clinic)}
-                                    title={clinic.is_active ? "Restrict Account" : "Activate Account"}
-                                 >
-                                    {clinic.is_active ? <Block fontSize="small" /> : <CheckCircle fontSize="small" />}
-                                 </IconButton>
+                                 </TableCell>
+                                 <TableCell>
+                                    <Chip 
+                                       label={clinic.plan} 
+                                       size="small" 
+                                       sx={{ 
+                                          textTransform: 'uppercase', 
+                                          fontWeight: 800, 
+                                          fontSize: '10px',
+                                          bgcolor: clinic.plan === 'premium' ? '#F0F7FF' : '#F1F5F9',
+                                          color: clinic.plan === 'premium' ? '#2F5FA5' : '#64748B',
+                                          border: '1px solid',
+                                          borderColor: clinic.plan === 'premium' ? '#BFDBFE' : '#E2E8F0'
+                                       }} 
+                                    />
+                                 </TableCell>
+                                 <TableCell>
+                                    {clinic.is_active ? 
+                                       <Chip 
+                                          icon={<CheckCircle2 size={12} />} 
+                                          label="Operational" 
+                                          size="small" 
+                                          sx={{ bgcolor: '#DCFCE7', color: '#166534', fontWeight: 700, fontSize: '11px' }} 
+                                       /> : 
+                                       <Chip 
+                                          icon={<ShieldAlert size={12} />} 
+                                          label="Restricted" 
+                                          size="small" 
+                                          sx={{ bgcolor: '#FEF2F2', color: '#991B1B', fontWeight: 700, fontSize: '11px' }} 
+                                       />
+                                    }
+                                 </TableCell>
+                                 <TableCell align='right'>
+                                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                       <IconButton 
+                                          color="primary" 
+                                          size="small"
+                                          onClick={() => {
+                                             setSelectedClinic(clinic);
+                                             setDetailsOpen(true);
+                                          }}
+                                          sx={{ bgcolor: '#F1F5F9' }}
+                                       >
+                                          <Eye size={16} />
+                                       </IconButton>
+                                       <IconButton 
+                                          color={clinic.is_active ? "error" : "success"}
+                                          size="small"
+                                          onClick={() => handleToggleStatus(clinic)}
+                                          title={clinic.is_active ? "Restrict Clinic" : "Restore Clinic"}
+                                          sx={{ bgcolor: clinic.is_active ? '#FEF2F2' : '#F0FDF4' }}
+                                       >
+                                          {clinic.is_active ? <ShieldAlert size={16} /> : <CheckCircle2 size={16} />}
+                                       </IconButton>
+                                    </Stack>
+                                 </TableCell>
+                              </TableRow>
+                           ))
+                        :  <TableRow>
+                              <TableCell colSpan={6} align='center' sx={{ py: 10 }}>
+                                 <Box sx={{ opacity: 0.2, mb: 2 }}>
+                                    <Building2 size={64} />
+                                 </Box>
+                                 <Typography variant='h6' color='text.secondary' fontWeight="700">No Clinics Operational</Typography>
+                                 <Typography variant='body2' color='text.secondary'>Initiate your first clinic deployment to begin operations.</Typography>
                               </TableCell>
                            </TableRow>
-                        ))
-                     :  <TableRow>
-                           <TableCell
-                              colSpan={7}
-                              align='center'>
-                              No clinics found.
-                           </TableCell>
-                        </TableRow>
-                     }
-                  </TableBody>
-               </Table>
-            </TableContainer>
+                        }
+                     </TableBody>
+                  </Table>
+               </TableContainer>
+            </Card>
          }
 
-         {/* Add Clinic Dialog */}
+         {/* Provisioning Dialog */}
          <Dialog
             open={open}
             onClose={handleClose}
             fullWidth
-            maxWidth='sm'>
-            <DialogTitle>Add New Clinic</DialogTitle>
-            <DialogContent dividers>
-               <TextField
-                  autoFocus
-                  margin='dense'
-                  name='name'
-                  label='Clinic Name'
-                  fullWidth
-                  value={formData.name}
-                  onChange={handleChange}
-               />
-               <TextField
-                  margin='dense'
-                  name='email'
-                  label='Email Address'
-                  type='email'
-                  fullWidth
-                  value={formData.email}
-                  onChange={handleChange}
-               />
-               <TextField
-                  margin='dense'
-                  name='phone'
-                  label='Phone Number'
-                  fullWidth
-                  value={formData.phone}
-                  onChange={handleChange}
-               />
-               <TextField
-                  margin='dense'
-                  name='address'
-                  label='Address'
-                  fullWidth
-                  multiline
-                  rows={2}
-                  value={formData.address}
-                  onChange={handleChange}
-               />
-               <TextField
-                  margin='dense'
-                  name='logo_url'
-                  label='Logo URL'
-                  fullWidth
-                  value={formData.logo_url}
-                  onChange={handleChange}
-                  helperText='Direct link to clinic logo image'
-               />
-               <TextField
-                  margin='dense'
-                  name='plan'
-                  label='Subscription Plan'
-                  fullWidth
-                  value={formData.plan}
-                  onChange={handleChange}
-                  helperText='e.g., standard, premium'
-               />
+            maxWidth='sm'
+            PaperProps={{ sx: { borderRadius: '24px', p: 1 } }}>
+            <DialogTitle sx={{ fontWeight: 800 }}>Provision New Clinic Instance</DialogTitle>
+            <DialogContent>
+               <Typography variant="body2" color="textSecondary" mb={3}>Deploy a fresh Clinova instance for a new medical facility. All default parameters will be initialized.</Typography>
+               <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                     <TextField
+                        autoFocus
+                        name='name'
+                        label='Facility Designation'
+                        fullWidth
+                        value={formData.name}
+                        onChange={handleChange}
+                        variant="outlined"
+                        InputProps={{ sx: { borderRadius: '12px' } }}
+                     />
+                  </Grid>
+                  <Grid item xs={12}>
+                     <TextField
+                        name='email'
+                        label='Administrative Email'
+                        type='email'
+                        fullWidth
+                        value={formData.email}
+                        onChange={handleChange}
+                        InputProps={{ sx: { borderRadius: '12px' } }}
+                     />
+                  </Grid>
+                  <Grid item xs={12}>
+                     <TextField
+                        name='phone'
+                        label='Primary Contact Vector'
+                        fullWidth
+                        value={formData.phone}
+                        onChange={handleChange}
+                        InputProps={{ sx: { borderRadius: '12px' } }}
+                     />
+                  </Grid>
+                  <Grid item xs={12}>
+                     <TextField
+                        name='address'
+                        label='Geospatial Coordinates / Address'
+                        fullWidth
+                        multiline
+                        rows={2}
+                        value={formData.address}
+                        onChange={handleChange}
+                        InputProps={{ sx: { borderRadius: '12px' } }}
+                     />
+                  </Grid>
+               </Grid>
             </DialogContent>
-            <DialogActions>
-               <Button
-                  onClick={handleClose}
-                  color='inherit'>
-                  Cancel
-               </Button>
+            <DialogActions sx={{ p: 3, pt: 1 }}>
+               <Button onClick={handleClose} sx={{ color: '#64748B', fontWeight: 700 }}>Cancel</Button>
                <Button
                   onClick={handleCreate}
                   variant='contained'
-                  disabled={createClinic.isPending}>
-                  {createClinic.isPending ?
-                     <CircularProgress size={24} />
-                  :  'Create'}
+                  disabled={createClinic.isPending}
+                  sx={{ borderRadius: '12px', px: 4, fontWeight: 700 }}>
+                  {createClinic.isPending ? <CircularProgress size={24} color="inherit" /> : 'Deploy Instance'}
                </Button>
             </DialogActions>
          </Dialog>
 
-         {/* Clinic Details Dialog */}
+         {/* Insights Dialog */}
          <ClinicDetailsDialog 
             open={detailsOpen} 
             onClose={handleDetailsClose} 
@@ -315,11 +357,11 @@ function ClinicDetailsDialog({ open, onClose, clinic, onLogoUpload, isUploading 
    if (!clinic) return null;
 
    return (
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth='md'>
-         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box display="flex" alignItems="center" gap={2}>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth='md' PaperProps={{ sx: { borderRadius: '30px', p: 1 } }}>
+         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 0 }}>
+            <Stack direction="row" spacing={3} alignItems="center">
                <Box position="relative">
-                  <Avatar src={clinic?.logo_url} sx={{ width: 50, height: 50 }}>
+                  <Avatar src={clinic?.logo_url} sx={{ width: 80, height: 80, boxShadow: '0 8px 16px rgba(0,0,0,0.1)', border: '4px solid white' }}>
                      {clinic?.name?.charAt(0)}
                   </Avatar>
                   <label htmlFor="logo-upload-details">
@@ -335,116 +377,111 @@ function ClinicDetailsDialog({ open, onClose, clinic, onLogoUpload, isUploading 
                         component="span"
                         sx={{
                            position: 'absolute',
-                           bottom: -5,
-                           right: -5,
+                           bottom: 0,
+                           right: 0,
                            bgcolor: 'white',
-                           boxShadow: 1,
-                           '&:hover': { bgcolor: 'grey.100' }
+                           boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                           '&:hover': { bgcolor: '#F8FAFC' }
                         }}
                      >
-                        <PhotoCamera sx={{ fontSize: 14 }} />
+                        <Camera size={14} />
                      </IconButton>
                   </label>
                </Box>
                <Box>
-                  <Typography variant="h6">{clinic.name} Profile</Typography>
-                  <Typography variant="caption" color="text.secondary">{clinic.email}</Typography>
+                  <Typography variant="h5" fontWeight="800" color="#0F172A">{clinic.name}</Typography>
+                  <Typography variant="body2" color="text.secondary" fontWeight="600">{clinic.email}</Typography>
+                  <Chip 
+                     label={clinic.plan} 
+                     size="small" 
+                     sx={{ mt: 1, textTransform: 'uppercase', fontSize: '10px', fontWeight: 800, bgcolor: '#F0F7FF', color: '#2F5FA5' }} 
+                  />
                </Box>
-            </Box>
+            </Stack>
             {isUploading && <CircularProgress size={20} />}
          </DialogTitle>
-         <DialogContent dividers>
+         <DialogContent sx={{ mt: 4 }}>
             {isLoading ? (
-               <Box display="flex" justifyContent="center" p={4}><CircularProgress /></Box>
+               <Box display="flex" justifyContent="center" p={10}><CircularProgress thickness={4} /></Box>
             ) : (
-               <Grid container spacing={3}>
-                  {/* Summary Cards */}
+               <Grid container spacing={4}>
+                  {/* Performance Indicators */}
                   <Grid item xs={12} sm={4}>
-                     <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
-                        <PeopleOutline color="primary" sx={{ mb: 1 }} />
-                        <Typography variant="h6">{stats?.summary?.total_patients || 0}</Typography>
-                        <Typography variant="body2" color="text.secondary">Total Patients</Typography>
-                     </Paper>
+                     <Card variant="outlined" sx={{ p: 3, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
+                        <Users size={24} color="#2F5FA5" style={{ marginBottom: '8px' }} />
+                        <Typography variant="h4" fontWeight="800" color="#2F5FA5">{stats?.summary?.total_patients || 0}</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700">ACTIVE PATIENTS</Typography>
+                     </Card>
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                     <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
-                        <TrendingUp color="secondary" sx={{ mb: 1 }} />
-                        <Typography variant="h6">{stats?.summary?.total_visits || 0}</Typography>
-                        <Typography variant="body2" color="text.secondary">Total Visits</Typography>
-                     </Paper>
+                     <Card variant="outlined" sx={{ p: 3, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
+                        <TrendingUp size={24} color="#5CC6C4" style={{ marginBottom: '8px' }} />
+                        <Typography variant="h4" fontWeight="800" color="#5CC6C4">{stats?.summary?.total_visits || 0}</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700">VISIT VELOCITY</Typography>
+                     </Card>
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                     <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
-                        <AttachMoney color="success" sx={{ mb: 1 }} />
-                        <Typography variant="h6">
-                           {stats?.summary?.last_use ? format(new Date(stats.summary.last_use), 'MMM dd, yyyy') : 'Never'}
+                     <Card variant="outlined" sx={{ p: 3, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
+                        <Calendar1Icon size={24} color="#F59E0B" style={{ marginBottom: '8px' }} />
+                        <Typography variant="h5" fontWeight="800" color="#92400E" sx={{ minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                           {stats?.summary?.last_use ? format(new Date(stats.summary.last_use), 'MMM dd') : 'Never'}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">Last Activity</Typography>
-                     </Paper>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700">RECENT ACTIVITY</Typography>
+                     </Card>
                   </Grid>
 
-                  {/* Revenue Chart */}
-                  <Grid item xs={12} md={6}>
-                     <Typography variant="subtitle2" fontWeight="bold" mb={1}>Revenue Trend (₹)</Typography>
-                     <Box sx={{ height: 250 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                           <BarChart data={stats?.charts?.revenue || []}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                              <YAxis tick={{ fontSize: 10 }} />
-                              <Tooltip />
-                              <Bar dataKey="revenue" fill="#3f51b5" radius={[4, 4, 0, 0]} />
-                           </BarChart>
-                        </ResponsiveContainer>
-                     </Box>
-                  </Grid>
-
-                  {/* Patients Chart */}
-                  <Grid item xs={12} md={6}>
-                     <Typography variant="subtitle2" fontWeight="bold" mb={1}>Patient Growth</Typography>
-                     <Box sx={{ height: 250 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                           <LineChart data={stats?.charts?.patients || []}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                              <YAxis tick={{ fontSize: 10 }} />
-                              <Tooltip />
-                              <Line type="monotone" dataKey="count" stroke="#f50057" strokeWidth={2} />
-                           </LineChart>
-                        </ResponsiveContainer>
-                     </Box>
-                  </Grid>
-
-                  {/* Details List */}
+                  {/* Revenue Visualization */}
                   <Grid item xs={12}>
-                     <Divider sx={{ my: 1 }} />
-                     <Typography variant="subtitle2" fontWeight="bold" mb={2}>Clinic Details</Typography>
-                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                           <Typography variant="caption" color="text.secondary">Address</Typography>
-                           <Typography variant="body2">{clinic.address || 'N/A'}</Typography>
+                     <Typography variant="subtitle1" fontWeight="800" color="#0F172A" mb={3}>Fiscal Trajectory (₹)</Typography>
+                     <Box sx={{ height: 250 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                           <AreaChart data={stats?.charts?.revenue || []}>
+                              <defs>
+                                 <linearGradient id="colorAdminRev" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#2F5FA5" stopOpacity={0.1}/>
+                                    <stop offset="95%" stopColor="#2F5FA5" stopOpacity={0}/>
+                                 </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                              <XAxis dataKey="month" tick={{ fontSize: 11, fontWeight: 600, fill: '#64748B' }} axisLine={false} tickLine={false} />
+                              <YAxis tick={{ fontSize: 11, fontWeight: 600, fill: '#64748B' }} axisLine={false} tickLine={false} />
+                              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                              <Area type="monotone" dataKey="revenue" stroke="#2F5FA5" strokeWidth={3} fill="url(#colorAdminRev)" />
+                           </AreaChart>
+                        </ResponsiveContainer>
+                     </Box>
+                  </Grid>
+
+                  {/* Infrastructure Metadata */}
+                  <Grid item xs={12}>
+                     <Divider sx={{ my: 1, borderColor: '#F1F5F9' }} />
+                     <Typography variant="subtitle1" fontWeight="800" color="#0F172A" my={3}>Infrastructure Metadata</Typography>
+                     <Grid container spacing={4}>
+                        <Grid item xs={12} sm={6}>
+                           <Stack direction="row" spacing={2}>
+                              <Box sx={{ p: 1, bgcolor: '#F1F5F9', borderRadius: '10px' }}><MapPin size={18} color="#64748B" /></Box>
+                              <Box>
+                                 <Typography variant="caption" color="text.secondary" fontWeight="700">PHYSICAL PROTOCOL (ADDRESS)</Typography>
+                                 <Typography variant="body2" fontWeight="600" color="#1E293B">{clinic.address || 'N/A'}</Typography>
+                              </Box>
+                           </Stack>
                         </Grid>
-                        <Grid item xs={6}>
-                           <Typography variant="caption" color="text.secondary">Phone</Typography>
-                           <Typography variant="body2">{clinic.phone || 'N/A'}</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                           <Typography variant="caption" color="text.secondary">Plan</Typography>
-                           <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>{clinic.plan}</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                           <Typography variant="caption" color="text.secondary">Account Status</Typography>
-                           <Typography variant="body2" color={clinic.is_active ? 'success.main' : 'error.main'}>
-                              {clinic.is_active ? 'Active' : 'Restricted'}
-                           </Typography>
+                        <Grid item xs={12} sm={6}>
+                           <Stack direction="row" spacing={2}>
+                              <Box sx={{ p: 1, bgcolor: '#F1F5F9', borderRadius: '10px' }}><Phone size={18} color="#64748B" /></Box>
+                              <Box>
+                                 <Typography variant="caption" color="text.secondary" fontWeight="700">COMMUNICATION VECTOR</Typography>
+                                 <Typography variant="body2" fontWeight="600" color="#1E293B">{clinic.phone || 'N/A'}</Typography>
+                              </Box>
+                           </Stack>
                         </Grid>
                      </Grid>
                   </Grid>
                </Grid>
             )}
          </DialogContent>
-         <DialogActions>
-            <Button onClick={onClose}>Close</Button>
+         <DialogActions sx={{ p: 3, pt: 1 }}>
+            <Button onClick={onClose} variant="outlined" sx={{ borderRadius: '12px', px: 4, fontWeight: 700, borderColor: '#E3EEF7' }}>Dismiss</Button>
          </DialogActions>
       </Dialog>
    );

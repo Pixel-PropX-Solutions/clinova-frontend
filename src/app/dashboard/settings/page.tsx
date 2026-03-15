@@ -21,16 +21,18 @@ import {
    FormControl,
    InputLabel,
    Stack,
+   Chip,
 } from '@mui/material';
 import {
-   CloudUpload,
-   PhotoCamera,
+   Camera,
    Save,
    Lock,
-   Business,
-   Description,
-   Visibility,
-} from '@mui/icons-material';
+   Building,
+   FileText,
+   UploadCloud,
+   CheckCircle2,
+   Eye,
+} from 'lucide-react';
 import {
    useClinicProfile,
    useUpdateProfile,
@@ -56,7 +58,7 @@ function TabPanel(props: TabPanelProps) {
          id={`settings-tabpanel-${index}`}
          aria-labelledby={`settings-tab-${index}`}
          {...other}>
-         {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+         {value === index && <Box sx={{ py: 4 }}>{children}</Box>}
       </div>
    );
 }
@@ -148,120 +150,69 @@ export default function SettingsPage() {
             justifyContent='center'
             alignItems='center'
             height='80vh'>
-            <CircularProgress />
+            <CircularProgress thickness={4} />
          </Box>
       );
    }
 
    return (
-      <Box
-         sx={{
-            pb: 8,
-            width: '100%',
-            maxWidth: '100%',
-            overflowX: 'hidden',
-         }}>
+      <Box sx={{ maxWidth: '1200px', mx: 'auto' }}>
          <Box sx={{ mb: 4 }}>
-            <Typography
-               variant='h4'
-               fontWeight='800'
-               sx={{
-                  color: 'primary.dark',
-                  mb: 0.5,
-               }}>
-               Settings
+            <Typography variant='h4' fontWeight='800' color="primary" gutterBottom>
+               Clinic Settings
             </Typography>
-            <Typography
-               variant='body1'
-               color='text.secondary'>
-               Manage your clinic profile, customize PDF exports, and security.
+            <Typography variant='body1' color='text.secondary'>
+               Manage your clinic identity, customize prescriptions, and configure security.
             </Typography>
          </Box>
 
-         <Paper
-            elevation={0}
-            sx={{
-               width: '100%',
-               borderRadius: 4,
-               border: '1px solid',
-               borderColor: 'divider',
-               overflow: 'hidden',
-               bgcolor: 'background.paper',
-            }}>
-            <Box
-               sx={{
-                  borderBottom: 1,
-                  borderColor: 'divider',
-                  bgcolor: 'grey.50',
-               }}>
+         <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
+            <Box sx={{ borderBottom: '1px solid #E3EEF7', bgcolor: '#F8FAFC' }}>
                <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
                   sx={{
-                     'px': 2,
+                     'px': 3,
                      '& .MuiTab-root': {
-                        'py': 2,
-                        'minHeight': 64,
-                        'fontSize': '0.9rem',
+                        'py': 2.5,
+                        'minHeight': 72,
+                        'fontSize': '15px',
                         'fontWeight': 600,
                         'textTransform': 'none',
-                        'color': 'text.secondary',
-                        '&.Mui-selected': {
-                           color: 'primary.main',
-                        },
+                        'color': '#64748B',
+                        '&.Mui-selected': { color: 'primary.main' },
+                        'transition': 'all 0.2s',
+                        'display': 'flex',
+                        'flexDirection': 'row',
+                        'alignItems': 'center',
+                        'gap': 1
                      },
-                     '& .MuiTabs-indicator': {
-                        height: 3,
-                        borderRadius: '3px 3px 0 0',
-                     },
+                     '& .MuiTabs-indicator': { height: 3, borderRadius: '3px 3px 0 0' },
                   }}>
-                  <Tab
-                     icon={<Business sx={{ mr: 1, fontSize: 20 }} />}
-                     iconPosition='start'
-                     label='Clinic Profile'
-                  />
-                  <Tab
-                     icon={<Description sx={{ mr: 1, fontSize: 20 }} />}
-                     iconPosition='start'
-                     label='PDF Templates'
-                  />
-                  <Tab
-                     icon={<Lock sx={{ mr: 1, fontSize: 20 }} />}
-                     iconPosition='start'
-                     label='Security'
-                  />
+                  <Tab icon={<Building size={18} />} iconPosition='start' label='Clinic Profile' />
+                  <Tab icon={<FileText size={18} />} iconPosition='start' label='PDF Templates' />
+                  <Tab icon={<Lock size={18} />} iconPosition='start' label='Security' />
                </Tabs>
             </Box>
 
-            <Box sx={{ p: { xs: 3, md: 4 } }}>
+            <Box sx={{ p: { xs: 3, md: 5 } }}>
                {/* Tab 0: Clinic Profile */}
-               <TabPanel
-                  value={tabValue}
-                  index={0}>
-                  <Grid
-                     container
-                     spacing={4}>
-                     <Grid
-                        item
-                        xs={12}
-                        md={4}>
-                        <Box
-                           sx={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'center',
-                              p: 2,
-                           }}>
+               <TabPanel value={tabValue} index={0}>
+                  <Grid container spacing={6}>
+                     <Grid item xs={12} md={4}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
                            <Box sx={{ position: 'relative', mb: 3 }}>
                               <Avatar
                                  src={clinic?.logo_url}
                                  sx={{
-                                    width: 140,
-                                    height: 140,
-                                    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-                                    border: '4px solid white',
-                                    fontSize: '2.5rem',
-                                    bgcolor: 'primary.light',
+                                    width: 160,
+                                    height: 160,
+                                    boxShadow: '0 20px 40px rgba(15, 23, 42, 0.1)',
+                                    border: '6px solid white',
+                                    fontSize: '3rem',
+                                    fontWeight: '800',
+                                    bgcolor: 'primary.main',
+                                    color: 'white'
                                  }}>
                                  {clinic?.name?.charAt(0)}
                               </Avatar>
@@ -278,118 +229,81 @@ export default function SettingsPage() {
                                     component='span'
                                     sx={{
                                        'position': 'absolute',
-                                       'bottom': 5,
-                                       'right': 5,
+                                       'bottom': 10,
+                                       'right': 10,
                                        'bgcolor': 'white',
-                                       'boxShadow':
-                                          '0 2px 8px rgba(0,0,0,0.15)',
-                                       '&:hover': { bgcolor: 'grey.50' },
-                                       'width': 36,
-                                       'height': 36,
+                                       'boxShadow': '0 4px 12px rgba(0,0,0,0.1)',
+                                       '&:hover': { bgcolor: '#F1F5F9', transform: 'scale(1.1)' },
+                                       'width': 44,
+                                       'height': 44,
+                                       'transition': 'all 0.2s'
                                     }}>
-                                    <PhotoCamera sx={{ fontSize: 20 }} />
+                                    <Camera size={22} />
                                  </IconButton>
                               </label>
                            </Box>
-                           <Typography
-                              variant='subtitle1'
-                              fontWeight='700'
-                              gutterBottom>
+                           <Typography variant='h6' fontWeight='700' gutterBottom>
                               Clinic Logo
                            </Typography>
-                           <Typography
-                              variant='caption'
-                              color='text.secondary'
-                              textAlign='center'>
-                              Max 2MB. Jpeg, Png or WebP.
+                           <Typography variant='body2' color='text.secondary' textAlign='center' sx={{ px: 2 }}>
+                              Upload your official clinic logo. This will appear on all prescriptions and receipts.
                            </Typography>
-                           {uploadLogo.isPending && (
-                              <CircularProgress
-                                 size={20}
-                                 sx={{ mt: 2 }}
-                              />
-                           )}
+                           {uploadLogo.isPending && <CircularProgress size={24} sx={{ mt: 3 }} />}
                         </Box>
                      </Grid>
 
-                     <Grid
-                        item
-                        xs={12}
-                        md={8}>
+                     <Grid item xs={12} md={8}>
                         <form onSubmit={handleProfileSubmit}>
-                           <Stack spacing={3}>
+                           <Stack spacing={4}>
+                              <Typography variant="subtitle2" color="primary" fontWeight="700" sx={{ letterSpacing: '1px', textTransform: 'uppercase' }}>
+                                 Information Details
+                              </Typography>
+
                               <TextField
                                  label='Clinic Name'
                                  fullWidth
                                  value={profileState.name}
-                                 onChange={(e) =>
-                                    setProfileState({
-                                       ...profileState,
-                                       name: e.target.value,
-                                    })
-                                 }
+                                 onChange={(e) => setProfileState({ ...profileState, name: e.target.value })}
                                  required
                               />
-                              <Grid
-                                 container
-                                 spacing={2}>
-                                 <Grid
-                                    item
-                                    xs={12}
-                                    md={6}>
+
+                              <Grid container rowGap={3} justifyContent='space-between'>
+                                 <Grid item xs={12} md={5.5}>
                                     <TextField
-                                       label='Phone Number'
+                                       label='Public Phone Number'
                                        fullWidth
                                        value={profileState.phone}
-                                       onChange={(e) =>
-                                          setProfileState({
-                                             ...profileState,
-                                             phone: e.target.value,
-                                          })
-                                       }
+                                       onChange={(e) => setProfileState({ ...profileState, phone: e.target.value })}
                                     />
                                  </Grid>
-                                 <Grid
-                                    item
-                                    xs={12}
-                                    md={6}>
+                                 <Grid item xs={12} md={5.5}>
                                     <TextField
-                                       label='Admin Email'
+                                       label='Administrative Email'
                                        fullWidth
                                        value={clinic?.email}
                                        disabled
-                                       helperText='Email cannot be changed'
+                                       helperText='Registered email cannot be changed'
                                     />
                                  </Grid>
                               </Grid>
+
                               <TextField
-                                 label='Full Address'
+                                 label='Full Clinic Address'
                                  fullWidth
                                  multiline
-                                 rows={3}
+                                 rows={4}
                                  value={profileState.address}
-                                 onChange={(e) =>
-                                    setProfileState({
-                                       ...profileState,
-                                       address: e.target.value,
-                                    })
-                                 }
+                                 onChange={(e) => setProfileState({ ...profileState, address: e.target.value })}
                               />
-                              <Box
-                                 display='flex'
-                                 justifyContent='flex-end'>
+
+                              <Box display='flex' justifyContent='flex-end' pt={2}>
                                  <Button
                                     type='submit'
                                     variant='contained'
-                                    startIcon={<Save />}
+                                    startIcon={<Save size={20} />}
                                     disabled={updateProfile.isPending}
-                                    sx={{
-                                       px: 4,
-                                       py: 1.2,
-                                       borderRadius: 2,
-                                       textTransform: 'none',
-                                    }}>
-                                    Save Changes
+                                    sx={{ px: 5, height: 52, borderRadius: '12px', fontSize: '16px' }}>
+                                    {updateProfile.isPending ? 'Saving...' : 'Save Profile'}
                                  </Button>
                               </Box>
                            </Stack>
@@ -399,38 +313,22 @@ export default function SettingsPage() {
                </TabPanel>
 
                {/* Tab 1: PDF Templates */}
-               <TabPanel
-                  value={tabValue}
-                  index={1}>
-                  <Grid
-                     container sx={{}}
-                     spacing={3}>
-                     <Grid
-                        item
-                        xs={12}
-                        md={4}
-                        sx={{ minWidth: 0 }}>
-                        <Box sx={{ mb: 3 }}>
-                           <Typography
-                              variant='h6'
-                              fontWeight='700'>
-                              Export Templates
+               <TabPanel value={tabValue} index={1}>
+                  <Grid container spacing={4}>
+                     <Grid item xs={12} md={4}>
+                        <Box sx={{ mb: 4 }}>
+                           <Typography variant='h6' fontWeight='700'>
+                              Design Templates
                            </Typography>
-                           <Typography
-                              variant='body2'
-                              color='text.secondary'>
-                              Themes for your medical reports and prescriptions.
+                           <Typography variant='body2' color='text.secondary'>
+                              Select a visual style for your PDF exports.
                            </Typography>
                         </Box>
 
-                        <Stack
-                           spacing={2}
-                           sx={{ maxHeight: 500, overflowY: 'auto', pr: 1 }}>
+                        <Stack spacing={2} sx={{ maxHeight: 600, overflowY: 'auto', pr: 1 }}>
                            {templates?.map((t: any) => {
-                              const isDefault =
-                                 clinic?.default_template_id === t._id;
-                              const isPreviewing =
-                                 previewTemplate?._id === t._id;
+                              const isDefault = clinic?.default_template_id === t._id;
+                              const isPreviewing = previewTemplate?._id === t._id;
 
                               return (
                                  <Card
@@ -439,102 +337,47 @@ export default function SettingsPage() {
                                     onClick={() => setPreviewTemplate(t)}
                                     sx={{
                                        'cursor': 'pointer',
-                                       'borderRadius': 3,
+                                       'borderRadius': '16px',
                                        'border': '2px solid',
-                                       'borderColor':
-                                          isPreviewing ? 'primary.main' : (
-                                             'divider'
-                                          ),
-                                       'bgcolor':
-                                          isPreviewing ? 'primary.50' : (
-                                             'background.paper'
-                                          ),
-                                       'transition': 'all 0.15s ease',
+                                       'borderColor': isPreviewing ? 'primary.main' : '#E2E8F0',
+                                       'bgcolor': isPreviewing ? '#F0F9FF' : 'white',
+                                       'transition': 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                        '&:hover': {
-                                          borderColor:
-                                             isPreviewing ? 'primary.main' : (
-                                                'primary.light'
-                                             ),
-                                          bgcolor:
-                                             isPreviewing ? 'primary.50' : (
-                                                'grey.50'
-                                             ),
+                                          borderColor: isPreviewing ? 'primary.main' : '#CBD5E1',
+                                          transform: 'translateY(-2px)'
                                        },
                                     }}>
-                                    <CardContent
-                                       sx={{
-                                          'p': 2,
-                                          '&:last-child': { pb: 2 },
-                                       }}>
-                                       <Box
-                                          sx={{
-                                             display: 'flex',
-                                             justifyContent: 'space-between',
-                                             alignItems: 'center',
-                                          }}>
+                                    <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+                                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                           <Box>
-                                             <Typography
-                                                variant='subtitle2'
-                                                fontWeight='700'
-                                                color={
-                                                   isPreviewing ? 'primary.dark'
-                                                      : 'text.primary'
-                                                }>
+                                             <Typography variant='subtitle1' fontWeight='700' color={isPreviewing ? 'primary.main' : '#0F172A'}>
                                                 {t.template_name}
                                              </Typography>
-                                             <Box
-                                                sx={{
-                                                   display: 'flex',
-                                                   gap: 1,
-                                                   mt: 0.5,
-                                                }}>
+                                             <Stack direction="row" spacing={1} mt={1}>
                                                 {t.is_global && (
-                                                   <Typography
-                                                      variant='caption'
-                                                      sx={{
-                                                         bgcolor: 'grey.100',
-                                                         color: 'text.secondary',
-                                                         px: 1,
-                                                         borderRadius: 0.5,
-                                                      }}>
-                                                      Global
-                                                   </Typography>
+                                                   <Chip label="System" size="small" sx={{ height: 20, fontSize: '10px', fontWeight: 700, bgcolor: '#F1F5F9' }} />
                                                 )}
                                                 {isDefault && (
-                                                   <Typography
-                                                      variant='caption'
-                                                      sx={{
-                                                         bgcolor: 'success.50',
-                                                         color: 'success.dark',
-                                                         px: 1,
-                                                         borderRadius: 0.5,
-                                                         fontWeight: 700,
-                                                      }}>
-                                                      Active
-                                                   </Typography>
+                                                   <Chip
+                                                      icon={<CheckCircle2 size={12} color="#166534" />}
+                                                      label="Active"
+                                                      size="small"
+                                                      sx={{ height: 20, fontSize: '10px', fontWeight: 700, bgcolor: '#DCFCE7', color: '#166534' }}
+                                                   />
                                                 )}
-                                             </Box>
+                                             </Stack>
                                           </Box>
                                           {!isDefault && isPreviewing && (
                                              <Button
                                                 size='small'
                                                 variant='contained'
-                                                sx={{
-                                                   borderRadius: 1.5,
-                                                   py: 0.4,
-                                                   fontSize: '0.7rem',
-                                                   textTransform: 'none',
-                                                }}
                                                 onClick={(e) => {
                                                    e.stopPropagation();
-                                                   setDefaultTemplate.mutate(
-                                                      t._id,
-                                                   );
+                                                   setDefaultTemplate.mutate(t._id);
                                                 }}
-                                                disabled={
-                                                   setDefaultTemplate.isPending
-                                                }>
-                                                Use This
+                                                disabled={setDefaultTemplate.isPending}
+                                                sx={{ borderRadius: '8px', textTransform: 'none', px: 2 }}>
+                                                Set Default
                                              </Button>
                                           )}
                                        </Box>
@@ -545,85 +388,53 @@ export default function SettingsPage() {
                         </Stack>
                      </Grid>
 
-                     <Grid
-                        item
-                        xs={12}
-                        md={8}
-                        sx={{ minWidth: 0 }}>
-                        <Box
-                           sx={{
-                              bgcolor: 'grey.100',
-                              borderRadius: 4,
-                              border: '1px solid',
-                              borderColor: 'divider',
-                              height: { xs: 420, md: 800 },
+                     <Grid item xs={12} md={8}>
+                        <Box sx={{
+                           bgcolor: '#F1F5F9',
+                           borderRadius: '24px',
+                           border: '1px solid #E2E8F0',
+                           height: { xs: 500, md: 700 },
+                           display: 'flex',
+                           flexDirection: 'column',
+                           overflow: 'hidden'
+                        }}>
+                           <Box sx={{
+                              px: 3,
+                              py: 2,
+                              bgcolor: 'white',
+                              borderBottom: '1px solid #E2E8F0',
                               display: 'flex',
-                              //  height: '100%', minHeight: '100%',
-                              flexDirection: 'column',
-                              overflow: 'hidden',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
                            }}>
-                           <Box
-                              sx={{
-                                 px: 2,
-                                 py: 1.5,
-                                 bgcolor: 'background.paper',
-                                 borderBottom: '1px solid',
-                                 borderColor: 'divider',
-                                 display: 'flex',
-                                 justifyContent: 'space-between',
-                              }}>
-                              <Typography
-                                 variant='caption'
-                                 fontWeight='700'
-                                 color='text.secondary'>
-                                 LIVE PREVIEW
-                              </Typography>
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                 <Eye size={16} color="#64748B" />
+                                 <Typography variant='caption' fontWeight='700' color='#64748B' sx={{ letterSpacing: '1px' }}>
+                                    PREVIEW MODE
+                                 </Typography>
+                              </Stack>
                               {previewTemplate && (
-                                 <Typography
-                                    variant='caption'
-                                    color='primary.main'
-                                    fontWeight='600'>
+                                 <Typography variant='subtitle2' color='primary' fontWeight='800'>
                                     {previewTemplate.template_name}
                                  </Typography>
                               )}
                            </Box>
 
-                           <Box
-                              sx={{
-                                 flexGrow: 1,
-                                 display: 'flex',
-                                 height: '100%',
-                                 justifyContent: 'center',
-                                 alignItems: 'flex-start',
-                                 overflow: 'auto',
-                                 bgcolor: '#f4f6f8',
-                                 p: { xs: 1.5, md: 3 },
-                              }}>
-                              {previewTemplate ?
-                                 <Paper
-                                    elevation={10}
-                                    sx={{
-                                       width: '100%',
-                                       height: '100%',
-                                       minHeight: '100%',
-                                       bgcolor: '#fff',
-                                       borderRadius: 2,
-                                       overflow: 'hidden',
-                                    }}>
+                           <Box sx={{ flexGrow: 1, p: 3, display: 'flex', justifyContent: 'center', bgcolor: '#E2E8F0' }}>
+                              {previewTemplate ? (
+                                 <Paper elevation={4} sx={{ width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden' }}>
                                     <iframe
                                        title={`template-preview-${previewTemplate._id}`}
                                        srcDoc={previewTemplate.html_content}
-                                       style={{
-                                          width: '100%',
-                                          height: '100%',
-                                          minHeight: '100%',
-                                          border: 'none',
-                                          display: 'block',
-                                          background: '#fff',
-                                       }}
+                                       style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'white' }}
                                     />
                                  </Paper>
-                                 : null}
+                              ) : (
+                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.5 }}>
+                                    <FileText size={64} />
+                                    <Typography mt={2}>Select a template to preview</Typography>
+                                 </Box>
+                              )}
                            </Box>
                         </Box>
                      </Grid>
@@ -631,84 +442,63 @@ export default function SettingsPage() {
                </TabPanel>
 
                {/* Tab 2: Security */}
-               <TabPanel
-                  value={tabValue}
-                  index={2}>
-                  <Box sx={{ maxWidth: 500 }}>
-                     <Typography
-                        variant='h6'
-                        fontWeight='700'
-                        gutterBottom>
-                        Update Password
+               <TabPanel value={tabValue} index={2}>
+                  <Box sx={{ maxWidth: 600 }}>
+                     <Typography variant='h6' fontWeight='700' gutterBottom>
+                        Security & Credentials
                      </Typography>
-                     <Typography
-                        variant='body2'
-                        color='text.secondary'
-                        mb={4}>
-                        Regularly changing your password helps protect your
-                        clinic data.
+                     <Typography variant='body2' color='text.secondary' mb={5}>
+                        Secure your account by maintaining a strong password. We recommend changing it every 90 days.
                      </Typography>
 
                      <form onSubmit={handlePasswordSubmit}>
-                        <Stack spacing={3}>
+                        <Stack spacing={4}>
                            <TextField
-                              label='Current Password'
+                              label='Current Access Password'
                               type='password'
                               fullWidth
                               value={passwordState.current_password}
-                              onChange={(e) =>
-                                 setPasswordState({
-                                    ...passwordState,
-                                    current_password: e.target.value,
-                                 })
-                              }
+                              onChange={(e) => setPasswordState({ ...passwordState, current_password: e.target.value })}
                               required
                            />
-                           <Divider />
-                           <TextField
-                              label='New Password'
-                              type='password'
-                              fullWidth
-                              value={passwordState.new_password}
-                              onChange={(e) =>
-                                 setPasswordState({
-                                    ...passwordState,
-                                    new_password: e.target.value,
-                                 })
-                              }
-                              required
-                           />
-                           <TextField
-                              label='Confirm New Password'
-                              type='password'
-                              fullWidth
-                              value={passwordState.confirm_password}
-                              onChange={(e) =>
-                                 setPasswordState({
-                                    ...passwordState,
-                                    confirm_password: e.target.value,
-                                 })
-                              }
-                              required
-                           />
+
+                           <Divider>
+                              <Chip label="NEW CREDENTIALS" size="small" sx={{ fontSize: '10px', fontWeight: 700, bgcolor: '#F8FAFC' }} />
+                           </Divider>
+
+                           <Stack spacing={3}>
+                              <TextField
+                                 label='New Secure Password'
+                                 type='password'
+                                 fullWidth
+                                 value={passwordState.new_password}
+                                 onChange={(e) => setPasswordState({ ...passwordState, new_password: e.target.value })}
+                                 required
+                              />
+                              <TextField
+                                 label='Verify New Password'
+                                 type='password'
+                                 fullWidth
+                                 value={passwordState.confirm_password}
+                                 onChange={(e) => setPasswordState({ ...passwordState, confirm_password: e.target.value })}
+                                 required
+                              />
+                           </Stack>
+
                            <Button
                               type='submit'
                               variant='contained'
                               color='primary'
                               disabled={changePassword.isPending}
-                              sx={{
-                                 py: 1.2,
-                                 borderRadius: 2,
-                                 textTransform: 'none',
-                              }}>
-                              Update Password
+                              sx={{ py: 2, mt: 2, borderRadius: '12px', fontSize: '16px', fontWeight: '700' }}>
+                              {changePassword.isPending ? 'Updating...' : 'Update Credentials'}
                            </Button>
                         </Stack>
                      </form>
                   </Box>
                </TabPanel>
             </Box>
-         </Paper>
+         </Card>
       </Box>
    );
 }

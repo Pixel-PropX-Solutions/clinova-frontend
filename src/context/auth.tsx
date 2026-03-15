@@ -17,23 +17,38 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
    const [isInitializing, setIsInitializing] = useState(true);
 
    useEffect(() => {
+      let cancelled = false;
+
       const initializeAuth = async () => {
          try {
-            // Attempt to via HTTP-only refresh cookie
+            // Attempt to refresh via HTTP-only refresh cookie
             const { data } = await apiClient.post('/auth/refresh');
-            setAuth(data.access_token, role || 'admin', undefined, undefined);
+            if (!cancelled) {
+               const currentRole = useAuthStore.getState().role;
+               setAuth(data.access_token, currentRole || 'admin', undefined, undefined);
+            }
          } catch (error) {
             // If refresh fails and we have no valid token, ensure we're logged out
-            if (!token) {
-               logout();
+            if (!cancelled) {
+               const currentToken = useAuthStore.getState().token;
+               if (!currentToken) {
+                  logout();
+               }
             }
          } finally {
-            setIsInitializing(false);
+            if (!cancelled) {
+               setIsInitializing(false);
+            }
          }
       };
 
       initializeAuth();
-   }, [logout, role, setAuth, token]);
+
+      return () => {
+         cancelled = true;
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [setAuth, logout]);
 
    useEffect(() => {
       if (isInitializing) return;

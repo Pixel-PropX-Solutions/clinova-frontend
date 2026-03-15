@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://clinova-backend.vercel.app/api/v1" || 'http://localhost:8000/api/v1',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

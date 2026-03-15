@@ -1,24 +1,19 @@
 import { AuthProvider } from '@/context/auth';
-import { Container } from '@mui/material';
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
+import { Inter } from 'next/font/google';
 import { ToastContainer } from 'react-toastify';
+import ClinovaThemeProvider from '@/providers/theme-provider';
+import './globals.css';
 
-const geistSans = localFont({
-   src: './fonts/GeistVF.woff',
-   variable: '--font-geist-sans',
-   weight: '100 900',
-});
-const geistMono = localFont({
-   src: './fonts/GeistMonoVF.woff',
-   variable: '--font-geist-mono',
-   weight: '100 900',
+const inter = Inter({
+   subsets: ['latin'],
+   variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
-   title: "OMKARY'S CLINIC",
+   title: 'Clinova | Smart Clinic Management',
    description:
-      "OMKARY'S CLINIC is a simple application that provides a simple solution to the problem of creating and managing your applications with a variety of  technologies ",
+      'Clinova is a premium clinic management platform designed for modern healthcare professionals.',
 };
 
 import QueryProvider from '@/providers/query-provider';
@@ -30,9 +25,12 @@ export default function RootLayout({
 }>) {
    return (
       <html lang='en'>
-         <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-            <div>
+         <body className={`${inter.variable} antialiased`}>
+            <ClinovaThemeProvider>
+               <div className='orbit-bg'>
+                  <div className='orbit-circle orbit-1' />
+                  <div className='orbit-circle orbit-2' />
+               </div>
                <ToastContainer
                   position='bottom-right'
                   autoClose={5000}
@@ -48,7 +46,7 @@ export default function RootLayout({
                <QueryProvider>
                   <AuthProvider>{children}</AuthProvider>
                </QueryProvider>
-            </div>
+            </ClinovaThemeProvider>
          </body>
       </html>
    );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
    Box,
    Typography,
@@ -68,8 +68,7 @@ function TabPanel(props: TabPanelProps) {
 export default function SettingsPage() {
    const theme = useTheme();
    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-   
+
    const [tabValue, setTabValue] = useState(0);
    const { data: clinic, isLoading: isClinicLoading } = useClinicProfile();
    const { data: templates } = useTemplates();
@@ -92,6 +91,66 @@ export default function SettingsPage() {
    });
 
    const [previewTemplate, setPreviewTemplate] = useState<any>(null);
+   const previewContainerRef = useRef<HTMLDivElement | null>(null);
+   const [previewFrameSize, setPreviewFrameSize] = useState({ width: 1024, height: 1320 });
+   const [previewScale, setPreviewScale] = useState(1);
+   const scaledPreviewWidth = previewFrameSize.width * previewScale;
+   const scaledPreviewHeight = previewFrameSize.height * previewScale;
+
+   const recalculatePreviewScale = useCallback(() => {
+      const container = previewContainerRef.current;
+      if (!container) return;
+
+      const widthScale = container.clientWidth / previewFrameSize.width;
+      const heightScale = container.clientHeight / previewFrameSize.height;
+      const nextScale = Math.min(1, widthScale, heightScale);
+
+      if (Number.isFinite(nextScale) && nextScale > 0) {
+         setPreviewScale(nextScale);
+      }
+   }, [previewFrameSize.height, previewFrameSize.width]);
+
+   useEffect(() => {
+      recalculatePreviewScale();
+   }, [recalculatePreviewScale, previewTemplate]);
+
+   useEffect(() => {
+      const container = previewContainerRef.current;
+      if (!container) return;
+
+      const observer = new ResizeObserver(() => {
+         recalculatePreviewScale();
+      });
+
+      observer.observe(container);
+      return () => observer.disconnect();
+   }, [recalculatePreviewScale]);
+
+   const handlePreviewLoad = (event: React.SyntheticEvent<HTMLIFrameElement>) => {
+      const iframe = event.currentTarget;
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+
+      const root = doc.documentElement;
+      const body = doc.body;
+
+      const contentWidth = Math.max(
+         root?.scrollWidth || 0,
+         root?.offsetWidth || 0,
+         body?.scrollWidth || 0,
+         body?.offsetWidth || 0,
+      );
+      const contentHeight = Math.max(
+         root?.scrollHeight || 0,
+         root?.offsetHeight || 0,
+         body?.scrollHeight || 0,
+         body?.offsetHeight || 0,
+      );
+
+      if (contentWidth > 0 && contentHeight > 0) {
+         setPreviewFrameSize({ width: contentWidth, height: contentHeight });
+      }
+   };
 
    useEffect(() => {
       if (clinic) {
@@ -161,8 +220,8 @@ export default function SettingsPage() {
       );
    }
 
-    return (
-      <Box sx={{ maxWidth: '1200px', mx: 'auto' }}>
+   return (
+      <Box sx={{ mx: 'auto' }}>
          <Box sx={{ mb: { xs: 3, md: 4 } }}>
             <Typography variant='h4' fontWeight='800' color="primary" gutterBottom sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                Clinic Settings
@@ -172,7 +231,7 @@ export default function SettingsPage() {
             </Typography>
          </Box>
 
-         <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
+         <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', }}>
             <Box sx={{ borderBottom: '1px solid #E3EEF7', bgcolor: '#F8FAFC' }}>
                <Tabs
                   value={tabValue}
@@ -198,9 +257,9 @@ export default function SettingsPage() {
                      },
                      '& .MuiTabs-indicator': { height: 3, borderRadius: '3px 3px 0 0' },
                   }}>
-                  <Tab icon={<Building size={16} />} iconPosition='start' label='Profile' />
-                  <Tab icon={<FileText size={16} />} iconPosition='start' label='Templates' />
-                  <Tab icon={<Lock size={16} />} iconPosition='start' label='Security' />
+                  <Tab icon={isMobile ? undefined : <Building size={16} />} iconPosition='start' label='Profile' />
+                  <Tab icon={isMobile ? undefined : <FileText size={16} />} iconPosition='start' label='Templates' />
+                  <Tab icon={isMobile ? undefined : <Lock size={16} />} iconPosition='start' label='Security' />
                </Tabs>
             </Box>
 
@@ -276,7 +335,7 @@ export default function SettingsPage() {
                                  required
                               />
 
-                              <Grid container  justifyContent={'space-between'}>
+                              <Grid container justifyContent={'space-between'}>
                                  <Grid item xs={12} sm={5.9}>
                                     <TextField
                                        label='Public Phone Number'
@@ -285,7 +344,7 @@ export default function SettingsPage() {
                                        onChange={(e) => setProfileState({ ...profileState, phone: e.target.value })}
                                     />
                                  </Grid>
-                                 <Grid item xs={12} sm={5.9}>
+                                 <Grid item xs={12} sm={5.9} sx={{ mt: { xs: 3, sm: 0 } }}>
                                     <TextField
                                        label='Administrative Email'
                                        fullWidth
@@ -403,7 +462,7 @@ export default function SettingsPage() {
                            bgcolor: '#F1F5F9',
                            borderRadius: '24px',
                            border: '1px solid #E2E8F0',
-                           height: { xs: 400, sm: 500, md: 700 },
+                           height: { xs: 400, sm: 560, md: 720, lg: 820 },
                            display: 'flex',
                            flexDirection: 'column',
                            overflow: 'hidden'
@@ -430,15 +489,67 @@ export default function SettingsPage() {
                               )}
                            </Box>
 
-                           <Box sx={{ flexGrow: 1, p: { xs: 1, sm: 3 }, display: 'flex', justifyContent: 'center', bgcolor: '#E2E8F0' }}>
+                           <Box
+                              ref={previewContainerRef}
+                              sx={{
+                                 flexGrow: 1,
+                                 p: { xs: 1, sm: 3 },
+                                 display: 'flex',
+                                 justifyContent: 'center',
+                                 alignItems: 'center',
+                                 bgcolor: '#E2E8F0',
+                                 overflow: 'hidden',
+                              }}>
                               {previewTemplate ? (
-                                 <Paper elevation={4} sx={{ width: '100%', height: '100%', borderRadius: '4px', overflow: 'hidden' }}>
-                                    <iframe
-                                       title={`template-preview-${previewTemplate._id}`}
-                                       srcDoc={previewTemplate.html_content}
-                                       style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'white' }}
-                                    />
-                                 </Paper>
+                                 isMobile ? (
+                                    <Box
+                                       sx={{
+                                          width: scaledPreviewWidth,
+                                          height: scaledPreviewHeight,
+                                          maxWidth: '100%',
+                                          maxHeight: '100%',
+                                          position: 'relative',
+                                          overflow: 'hidden',
+                                       }}>
+                                       <Paper
+                                          elevation={4}
+                                          sx={{
+                                             width: previewFrameSize.width,
+                                             height: previewFrameSize.height,
+                                             position: 'absolute',
+                                             top: 0,
+                                             left: '50%',
+                                             borderRadius: '8px',
+                                             overflow: 'hidden',
+                                             backgroundColor: 'white',
+                                             transform: `translateX(-50%) scale(${previewScale})`,
+                                             transformOrigin: 'top center',
+                                          }}>
+                                          <iframe
+                                             title={`template-preview-${previewTemplate._id}`}
+                                             srcDoc={previewTemplate.html_content}
+                                             onLoad={handlePreviewLoad}
+                                             style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'white' }}
+                                          />
+                                       </Paper>
+                                    </Box>
+                                 ) : (
+                                    <Paper
+                                       elevation={4}
+                                       sx={{
+                                          width: '100%',
+                                          height: '100%',
+                                          borderRadius: '8px',
+                                          overflow: 'hidden',
+                                          backgroundColor: 'white',
+                                       }}>
+                                       <iframe
+                                          title={`template-preview-${previewTemplate._id}`}
+                                          srcDoc={previewTemplate.html_content}
+                                          style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'white' }}
+                                       />
+                                    </Paper>
+                                 )
                               ) : (
                                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.5 }}>
                                     <FileText size={48} />

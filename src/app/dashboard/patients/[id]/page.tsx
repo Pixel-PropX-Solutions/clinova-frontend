@@ -27,6 +27,8 @@ import {
    DialogActions,
    Stack,
    Card,
+   useTheme,
+   useMediaQuery,
 } from '@mui/material';
 import {
    ChevronLeft,
@@ -47,10 +49,14 @@ import { useDeleteVisit } from '@/hooks/api/useVisits';
 import { generatePDF } from '@/hooks/api/usePDF';
 import { format } from 'date-fns';
 import { useClinicProfile } from '@/hooks/api/useSettings';
+import BackDropLoading from '@/container/BackdropLoader';
 
 export default function PatientProfilePage() {
    const params = useParams();
    const router = useRouter();
+   const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
    const [isNavigating, startNavigation] = React.useTransition();
    const patientId = params?.id as string;
    const { data: clinic } = useClinicProfile();
@@ -119,11 +125,8 @@ export default function PatientProfilePage() {
 
    return (
       <Box maxWidth='xl' mx='auto'>
-         <Backdrop
-            open={isNavigating}
-            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2000 }}>
-            <CircularProgress color='inherit' />
-         </Backdrop>
+         <BackDropLoading isLoading={isNavigating} />
+
          {/* Navigation */}
          <Button
             startIcon={<ChevronLeft size={18} />}
@@ -142,14 +145,14 @@ export default function PatientProfilePage() {
             border: '1px solid #E3EEF7',
             background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)'
          }}>
-            <Grid container spacing={4} alignItems='center'>
-               <Grid item>
+            <Grid container spacing={{ xs: 3, md: 4 }} alignItems='center'>
+               <Grid item xs={12} sm="auto" sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                   <Avatar
                      sx={{
-                        width: 100,
-                        height: 100,
+                        width: { xs: 80, sm: 100 },
+                        height: { xs: 80, sm: 100 },
                         background: 'linear-gradient(135deg, #2F5FA5 0%, #5CC6C4 100%)',
-                        fontSize: 36,
+                        fontSize: { xs: 28, sm: 36 },
                         fontWeight: '800',
                         boxShadow: '0 10px 20px rgba(47, 95, 165, 0.2)',
                         border: '4px solid white'
@@ -157,19 +160,24 @@ export default function PatientProfilePage() {
                      {patient.name?.charAt(0)?.toUpperCase()}
                   </Avatar>
                </Grid>
-               <Grid item xs={12} md>
-                  <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-                     <Typography variant='h3' fontWeight='800' color="#0F172A">
-                        {patient.name}
+               <Grid item xs={12} sm>
+                  <Stack
+                     direction={{ xs: 'column', sm: 'row' }}
+                     spacing={2}
+                     alignItems={{ xs: 'center', sm: 'center' }}
+                     textAlign={{ xs: 'center', sm: 'left' }}
+                  >
+                     <Typography variant={isMobile ? 'h4' : 'h3'} fontWeight='800' color="#0F172A">
+                        {patient.name?.charAt(0)?.toUpperCase() + patient.name?.slice(1)}
                      </Typography>
-                     <Chip
+                     {/* <Chip
                         label={`ID: ${patientId.substring(0, 8).toUpperCase()}`}
                         size="small"
                         sx={{ bgcolor: '#F1F5F9', color: '#64748B', fontWeight: 700, borderRadius: '6px' }}
-                     />
+                     /> */}
                   </Stack>
 
-                  <Grid container spacing={3} mt={1}>
+                  <Grid container spacing={isMobile ? 1.5 : 3} mt={isMobile ? 1 : 1} justifyContent={{ xs: 'center', sm: 'flex-start' }}>
                      <Grid item>
                         <Stack direction="row" spacing={1} alignItems="center">
                            <Phone size={16} color="#64748B" />
@@ -184,8 +192,8 @@ export default function PatientProfilePage() {
                      </Grid>
                      {patient.address && (
                         <Grid item xs={12} sm="auto">
-                           <Stack direction="row" spacing={1} alignItems="center">
-                              <MapPin size={16} color="#64748B" />
+                           <Stack direction="row" spacing={1} alignItems="center" flexWrap={'wrap'} justifyContent={{ xs: 'center', sm: 'flex-start', }}>
+                              {!isMobile && <MapPin size={16} color="#64748B" />}
                               <Typography variant='body1' fontWeight="600" color="#475569">{patient.address}</Typography>
                            </Stack>
                         </Grid>
@@ -200,9 +208,10 @@ export default function PatientProfilePage() {
                      </Grid>
                   </Grid>
                </Grid>
-               <Grid item>
+               <Grid item xs={12} md="auto">
                   <Button
                      variant="contained"
+                     fullWidth={isMobile}
                      startIcon={<Printer size={18} />}
                      sx={{ borderRadius: '12px', px: 3, height: 48 }}
                   >
@@ -258,103 +267,221 @@ export default function PatientProfilePage() {
          </Grid>
 
          {/* Visit History Section */}
-         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+         <Stack
+            direction={isMobile ? "column" : "row"}
+            spacing={2}
+            justifyContent="space-between"
+            alignItems={isMobile ? "flex-start" : "center"}
+            sx={{ mb: 3 }}
+         >
             <Typography variant='h5' fontWeight='800' color="#0F172A">
-               Visit Archetypes
+               Visit History
             </Typography>
             <Chip
                icon={<History size={14} />}
                label={`${visits?.length || 0} Records Found`}
                sx={{ fontWeight: 700, bgcolor: '#F1F5F9', color: '#64748B' }}
             />
-         </Box>
+         </Stack>
 
-         <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
-            <TableContainer>
-               <Table>
-                  <TableHead sx={{ bgcolor: '#F8FAFC' }}>
-                     <TableRow>
-                        <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2 }}>#</TableCell>
-                        <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>VISIT DATE</TableCell>
-                        <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>CLINICIAN</TableCell>
-                        <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>SPECIALTY</TableCell>
-                        <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>PRIMARY DIAGNOSIS</TableCell>
-                        <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>METHOD</TableCell>
-                        <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>FEES</TableCell>
-                        <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>ACTIONS</TableCell>
-                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                     {visits && visits.length > 0 ?
-                        visits.map((visit: any, index: number) => (
-                           <TableRow key={visit.visit_id || index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                              <TableCell sx={{ fontWeight: 700, color: '#94A3B8' }}>{visits.length - index}</TableCell>
-                              <TableCell>
-                                 <Typography variant="body2" fontWeight="700" color="#0F172A">
-                                    {visit.visited_at ? format(new Date(visit.visited_at), 'dd MMM yyyy') : 'N/A'}
-                                 </Typography>
-                                 <Typography variant="caption" color="textSecondary">
-                                    {visit.visited_at ? format(new Date(visit.visited_at), 'hh:mm a') : ''}
-                                 </Typography>
-                              </TableCell>
-                              <TableCell>
-                                 <Typography variant="body2" fontWeight="600">Dr. {visit.dr_name || '-'}</Typography>
-                              </TableCell>
-                              <TableCell>
-                                 <Chip
-                                    label={visit.specialization || 'General'}
-                                    size="small"
-                                    sx={{ bgcolor: '#F1F5F9', fontSize: '11px', fontWeight: 600 }}
-                                 />
-                              </TableCell>
-                              <TableCell sx={{ maxWidth: 200 }}>
-                                 <Typography variant="body2" color="#475569" noWrap title={visit.disease || visit.diagnosis}>
-                                    {visit.disease || visit.diagnosis || '-'}
-                                 </Typography>
-                              </TableCell>
-                              <TableCell>
-                                 <Stack direction="row" spacing={1} alignItems="center">
-                                    {visit.payment_method === 'UPI' || visit.payment_method === 'Card' ? <CreditCard size={14} /> : <Wallet size={14} />}
-                                    <Typography variant="body2" fontWeight="600">{visit.payment_method || 'Cash'}</Typography>
-                                 </Stack>
-                              </TableCell>
-                              <TableCell align='right'>
-                                 <Typography fontWeight='800' color="#0F172A">₹{visit.fees?.toLocaleString() || 0}</Typography>
-                              </TableCell>
-                              <TableCell align='right'>
-                                 <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                    <IconButton
-                                       size='small'
-                                       color='primary'
-                                       onClick={() => handlePrintParchi(visit.visit_id)}
-                                       sx={{ bgcolor: '#F0F7FF', '&:hover': { bgcolor: '#E0F2FE' } }}>
-                                       <Printer size={16} />
-                                    </IconButton>
-                                    <IconButton
-                                       size='small'
-                                       color='error'
-                                       onClick={() => handleDeleteClick(visit.visit_id)}
-                                       sx={{ bgcolor: '#FEF2F2', '&:hover': { bgcolor: '#FEE2E2' } }}>
-                                       <Trash2 size={16} />
-                                    </IconButton>
-                                 </Stack>
+         {!isMobile ? (
+            <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
+               <TableContainer>
+                  <Table>
+                     <TableHead sx={{ bgcolor: '#F8FAFC' }}>
+                        <TableRow>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2 }}>#</TableCell>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>VISIT DATE</TableCell>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>CLINICIAN</TableCell>
+                           {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>SPECIALTY</TableCell>}
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>PRIMARY DIAGNOSIS</TableCell>
+                           {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>METHOD</TableCell>}
+                           <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>FEES</TableCell>
+                           <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>ACTIONS</TableCell>
+                        </TableRow>
+                     </TableHead>
+                     <TableBody>
+                        {visits && visits.length > 0 ?
+                           visits.map((visit: any, index: number) => (
+                              <TableRow key={visit.visit_id || index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                 <TableCell sx={{ fontWeight: 700, color: '#94A3B8' }}>{visits.length - index}</TableCell>
+                                 <TableCell>
+                                    <Typography variant="body2" fontWeight="700" color="#0F172A">
+                                       {visit.visited_at ? format(new Date(visit.visited_at), 'dd MMM yyyy') : 'N/A'}
+                                    </Typography>
+                                    <Typography variant="caption" color="textSecondary">
+                                       {visit.visited_at ? format(new Date(visit.visited_at), 'hh:mm a') : ''}
+                                    </Typography>
+                                 </TableCell>
+                                 <TableCell>
+                                    <Typography variant="body2" fontWeight="600">Dr. {visit.dr_name || '-'}</Typography>
+                                 </TableCell>
+                                 {!isTablet && (
+                                    <TableCell>
+                                       <Chip
+                                          label={visit.specialization || 'General'}
+                                          size="small"
+                                          sx={{ bgcolor: '#F1F5F9', fontSize: '11px', fontWeight: 600 }}
+                                       />
+                                    </TableCell>
+                                 )}
+                                 <TableCell sx={{ maxWidth: 200 }}>
+                                    <Typography variant="body2" color="#475569" noWrap title={visit.disease || visit.diagnosis}>
+                                       {visit.disease || visit.diagnosis || '-'}
+                                    </Typography>
+                                 </TableCell>
+                                 {!isTablet && (
+                                    <TableCell>
+                                       <Stack direction="row" spacing={1} alignItems="center">
+                                          {visit.payment_method === 'UPI' || visit.payment_method === 'Card' ? <CreditCard size={14} /> : <Wallet size={14} />}
+                                          <Typography variant="body2" fontWeight="600">{visit.payment_method || 'Cash'}</Typography>
+                                       </Stack>
+                                    </TableCell>
+                                 )}
+                                 <TableCell align='right'>
+                                    <Typography fontWeight='800' color="#0F172A" sx={{ fontSize: '1rem' }}>₹{visit.fees?.toLocaleString() || 0}</Typography>
+                                 </TableCell>
+                                 <TableCell align='right'>
+                                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                       <IconButton
+                                          size='small'
+                                          color='primary'
+                                          onClick={() => handlePrintParchi(visit.visit_id)}
+                                          sx={{ bgcolor: '#F0F7FF', '&:hover': { bgcolor: '#E0F2FE' } }}>
+                                          <Printer size={16} />
+                                       </IconButton>
+                                       <IconButton
+                                          size='small'
+                                          color='error'
+                                          onClick={() => handleDeleteClick(visit.visit_id)}
+                                          sx={{ bgcolor: '#FEF2F2', '&:hover': { bgcolor: '#FEE2E2' } }}>
+                                          <Trash2 size={16} />
+                                       </IconButton>
+                                    </Stack>
+                                 </TableCell>
+                              </TableRow>
+                           ))
+                           : <TableRow>
+                              <TableCell colSpan={8} align='center' sx={{ py: 10 }}>
+                                 <Box sx={{ opacity: 0.2, mb: 2 }}>
+                                    <Stethoscope size={64} />
+                                 </Box>
+                                 <Typography variant="h6" color='text.secondary' fontWeight="700">No Historical Records</Typography>
+                                 <Typography variant="body2" color='text.secondary'>This patient has no registered visits yet.</Typography>
                               </TableCell>
                            </TableRow>
-                        ))
-                        : <TableRow>
-                           <TableCell colSpan={8} align='center' sx={{ py: 10 }}>
-                              <Box sx={{ opacity: 0.2, mb: 2 }}>
-                                 <Stethoscope size={64} />
+                        }
+                     </TableBody>
+                  </Table>
+               </TableContainer>
+            </Card>
+         ) : (
+            <Box>
+               {visits && visits.length > 0 ? (
+                  visits.map((visit: any, index: number) => (
+                     <Card key={visit.visit_id || index} sx={{
+                        p: 2.5,
+                        mb: 2,
+                        borderRadius: '20px',
+                        border: '1px solid #E3EEF7',
+                        boxShadow: '0 4px 15px rgba(15, 23, 42, 0.03)',
+                        transition: 'transform 0.2s',
+                        '&:active': { transform: 'scale(0.98)' }
+                     }}>
+                        <Stack spacing={2}>
+                           <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                              <Box>
+                                 <Stack direction="row" spacing={1} alignItems="center" mb={0.5}>
+                                    <Box sx={{
+                                       width: 24,
+                                       height: 24,
+                                       borderRadius: '6px',
+                                       bgcolor: '#F1F5F9',
+                                       display: 'flex',
+                                       alignItems: 'center',
+                                       justifyContent: 'center',
+                                       fontSize: '11px',
+                                       fontWeight: 700,
+                                       color: '#64748B'
+                                    }}>
+                                       {visits.length - index}
+                                    </Box>
+                                    <Typography variant="body1" fontWeight="800" color="#0F172A">
+                                       {visit.visited_at ? format(new Date(visit.visited_at), 'dd MMM yyyy') : 'N/A'}
+                                    </Typography>
+                                 </Stack>
+                                 <Typography variant="caption" color="textSecondary" sx={{ ml: 4, display: 'block' }}>
+                                    {visit.visited_at ? format(new Date(visit.visited_at), 'hh:mm a') : ''}
+                                 </Typography>
                               </Box>
-                              <Typography variant="h6" color='text.secondary' fontWeight="700">No Historical Records</Typography>
-                              <Typography variant="body2" color='text.secondary'>This patient has no registered visits yet.</Typography>
-                           </TableCell>
-                        </TableRow>
-                     }
-                  </TableBody>
-               </Table>
-            </TableContainer>
-         </Card>
+                              <Typography variant="h6" fontWeight="900" color="primary.main">
+                                 ₹{visit.fees?.toLocaleString() || 0}
+                              </Typography>
+                           </Stack>
+
+                           <Divider sx={{ borderStyle: 'dashed' }} />
+
+                           <Grid container >
+                              <Grid item xs={12}>
+                                 <Stack direction="row" spacing={1} alignItems="center">
+                                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', fontSize: '14px', fontWeight: 700 }}>
+                                       {visit.dr_name?.charAt(0) || 'D'}
+                                    </Avatar>
+                                    <Box>
+                                       <Typography variant="caption" color="textSecondary">Clinician</Typography>
+                                       <Typography variant="body2" fontWeight="700">Dr. {visit.dr_name || '-'}</Typography>
+                                    </Box>
+                                 </Stack>
+                              </Grid>
+
+                              <Grid item xs={12}>
+                                 <Box sx={{ bgcolor: '#F8FAFC', p: 1.5, borderRadius: '12px', mt: 1.5 }}>
+                                    <Typography variant="caption" color="textSecondary" display="block" gutterBottom>Primary Diagnosis</Typography>
+                                    <Typography variant="body2" color="#475569" fontWeight="600">
+                                       {visit.disease || visit.diagnosis || 'No diagnosis recorded'}
+                                    </Typography>
+                                 </Box>
+                              </Grid>
+
+                              <Grid item xs={6} sx={{ mt: 1.5 }}>
+                                 <Typography variant="caption" color="textSecondary" display="block" gutterBottom>Payment Method</Typography>
+                                 <Stack direction="row" spacing={1} alignItems="center">
+                                    <Box sx={{ p: 0.5, bgcolor: '#F1F5F9', borderRadius: '6px', display: 'flex' }}>
+                                       {visit.payment_method === 'UPI' || visit.payment_method === 'Card' ? <CreditCard size={14} /> : <Wallet size={14} />}
+                                    </Box>
+                                    <Typography variant="body2" fontWeight="700">{visit.payment_method || 'Cash'}</Typography>
+                                 </Stack>
+                              </Grid>
+
+                              <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1.5 }}>
+                                 <Stack direction="row" spacing={1.5}>
+                                    <IconButton
+                                       onClick={() => handlePrintParchi(visit.visit_id)}
+                                       sx={{ bgcolor: '#F0F7FF', color: 'primary.main', '&:hover': { bgcolor: '#E0F2FE' } }}>
+                                       <Printer size={18} />
+                                    </IconButton>
+                                    <IconButton
+                                       onClick={() => handleDeleteClick(visit.visit_id)}
+                                       sx={{ bgcolor: '#FEF2F2', color: 'error.main', '&:hover': { bgcolor: '#FEE2E2' } }}>
+                                       <Trash2 size={18} />
+                                    </IconButton>
+                                 </Stack>
+                              </Grid>
+                           </Grid>
+                        </Stack>
+                     </Card>
+                  ))
+               ) : (
+                  <Card sx={{ p: 4, textAlign: 'center', borderRadius: '24px', border: '1px solid #E3EEF7' }}>
+                     <Box sx={{ opacity: 0.2, mb: 2 }}>
+                        <Stethoscope size={48} />
+                     </Box>
+                     <Typography variant="h6" fontWeight="700">No Historical Records</Typography>
+                     <Typography variant="body2" color='text.secondary'>This patient has no registered visits yet.</Typography>
+                  </Card>
+               )}
+            </Box>
+         )}
 
          {/* Delete Dialog */}
          <Dialog

@@ -25,6 +25,8 @@ import {
    Stack,
    Card,
    Chip,
+   useMediaQuery,
+   useTheme,
 } from '@mui/material';
 import { 
    Plus, 
@@ -64,6 +66,10 @@ export default function ClinicsPage() {
    const createClinic = useCreateClinic();
    const updateClinic = useUpdateClinic();
    const uploadLogo = useUploadClinicLogo();
+
+   const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
    const [open, setOpen] = useState(false);
    const [detailsOpen, setDetailsOpen] = useState(false);
@@ -131,27 +137,34 @@ export default function ClinicsPage() {
          <Box
             display='flex'
             justifyContent='space-between'
-            alignItems='center'
-            mb={5}
+            alignItems='flex-start'
+            mb={{ xs: 3, md: 5 }}
             flexWrap="wrap"
-            gap={2}>
-            <Box>
+            gap={3}>
+            <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
                <Typography
                   variant='h4'
                   fontWeight='800'
                   color="primary"
-                  gutterBottom>
+                  gutterBottom
+                  sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                   Clinic Governance
                </Typography>
-               <Typography variant='body1' color='text.secondary'>
+               <Typography variant='body1' color='text.secondary' sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                   High-level orchestration of multi-clinic operations and subscription tiers.
                </Typography>
             </Box>
             <Button
                variant='contained'
+               fullWidth={false}
                startIcon={<Plus size={18} />}
                onClick={() => setOpen(true)}
-               sx={{ borderRadius: '12px', height: 48, px: 3 }}>
+               sx={{ 
+                  borderRadius: '12px', 
+                  height: 48, 
+                  px: 3,
+                  width: { xs: '100%', sm: 'auto' }
+               }}>
                Provision New Clinic
             </Button>
          </Box>
@@ -163,54 +176,65 @@ export default function ClinicsPage() {
          :  <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
                <TableContainer>
                   <Table>
-                     <TableHead sx={{ bgcolor: '#F8FAFC' }}>
-                        <TableRow>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2 }}>CLINIC IDENTITY</TableCell>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>CONTACT INFRASTRUCTURE</TableCell>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>LOCATION</TableCell>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>SERVICE TIER</TableCell>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>OPERATIONAL STATUS</TableCell>
-                           <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>ORCHESTRATION</TableCell>
-                        </TableRow>
-                     </TableHead>
-                     <TableBody>
-                        {Array.isArray(clinics) && clinics.length > 0 ?
-                           clinics.map((clinic: any) => (
-                              <TableRow key={clinic._id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                 <TableCell>
-                                    <Stack direction="row" spacing={2} alignItems="center">
-                                       <Avatar src={clinic.logo_url} sx={{ bgcolor: '#F1F5F9', color: '#2F5FA5', fontWeight: 'bold' }}>
-                                          {clinic.name.charAt(0).toUpperCase()}
-                                       </Avatar>
-                                       <Typography variant='subtitle2' fontWeight='700' color="#0F172A">
-                                          {clinic.name}
-                                       </Typography>
-                                    </Stack>
-                                 </TableCell>
-                                 <TableCell>
-                                    <Typography variant="body2" color="#0F172A" fontWeight="600">{clinic.email}</Typography>
-                                    <Typography variant="caption" color="textSecondary">{clinic.phone}</Typography>
-                                 </TableCell>
-                                 <TableCell>
-                                    <Typography variant="body2" color="#475569" sx={{ maxWidth: 200 }} noWrap title={clinic.address}>
-                                       {clinic.address}
-                                    </Typography>
-                                 </TableCell>
-                                 <TableCell>
-                                    <Chip 
-                                       label={clinic.plan} 
-                                       size="small" 
-                                       sx={{ 
-                                          textTransform: 'uppercase', 
-                                          fontWeight: 800, 
-                                          fontSize: '10px',
-                                          bgcolor: clinic.plan === 'premium' ? '#F0F7FF' : '#F1F5F9',
-                                          color: clinic.plan === 'premium' ? '#2F5FA5' : '#64748B',
-                                          border: '1px solid',
-                                          borderColor: clinic.plan === 'premium' ? '#BFDBFE' : '#E2E8F0'
-                                       }} 
-                                    />
-                                 </TableCell>
+                      <TableHead sx={{ bgcolor: '#F8FAFC' }}>
+                         <TableRow>
+                            <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2 }}>FACILITY</TableCell>
+                            {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>INFRASTRUCTURE</TableCell>}
+                            {!isMobile && <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>LOCATION</TableCell>}
+                            <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>TIER</TableCell>
+                            <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>STATUS</TableCell>
+                            <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>ACTIONS</TableCell>
+                         </TableRow>
+                      </TableHead>
+                      <TableBody>
+                         {Array.isArray(clinics) && clinics.length > 0 ?
+                            clinics.map((clinic: any) => (
+                               <TableRow key={clinic._id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                  <TableCell>
+                                     <Stack direction="row" spacing={1.5} alignItems="center">
+                                        <Avatar 
+                                           src={clinic.logo_url} 
+                                           sx={{ 
+                                              bgcolor: '#F1F5F9', 
+                                              color: '#2F5FA5', 
+                                              fontWeight: 'bold',
+                                              width: { xs: 32, sm: 40 },
+                                              height: { xs: 32, sm: 40 },
+                                              fontSize: { xs: '0.9rem', sm: '1rem' }
+                                           }}>
+                                           {clinic.name.charAt(0).toUpperCase()}
+                                        </Avatar>
+                                        <Box>
+                                           <Typography variant='subtitle2' fontWeight='700' color="#0F172A" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+                                              {clinic.name}
+                                           </Typography>
+                                           {isTablet && <Typography variant="caption" color="textSecondary">{clinic.phone}</Typography>}
+                                        </Box>
+                                     </Stack>
+                                  </TableCell>
+                                  {!isTablet && <TableCell>
+                                     <Typography variant="body2" color="#0F172A" fontWeight="600">{clinic.email}</Typography>
+                                     <Typography variant="caption" color="textSecondary">{clinic.phone}</Typography>
+                                  </TableCell>}
+                                  {!isMobile && <TableCell>
+                                     <Typography variant="body2" color="#475569" sx={{ maxWidth: 200 }} noWrap title={clinic.address}>
+                                        {clinic.address}
+                                     </Typography>
+                                  </TableCell>}
+                                  <TableCell>
+                                     <Chip 
+                                        label={clinic.plan} 
+                                        size="small" 
+                                        sx={{ 
+                                           textTransform: 'uppercase', 
+                                           fontWeight: 800, 
+                                           fontSize: '9px',
+                                           bgcolor: clinic.plan === 'premium' ? '#F0F7FF' : '#F1F5F9',
+                                           color: clinic.plan === 'premium' ? '#2F5FA5' : '#64748B',
+                                           height: 20
+                                        }} 
+                                     />
+                                  </TableCell>
                                  <TableCell>
                                     {clinic.is_active ? 
                                        <Chip 
@@ -270,12 +294,13 @@ export default function ClinicsPage() {
          }
 
          {/* Provisioning Dialog */}
-         <Dialog
-            open={open}
-            onClose={handleClose}
-            fullWidth
-            maxWidth='sm'
-            PaperProps={{ sx: { borderRadius: '24px', p: 1 } }}>
+          <Dialog
+             open={open}
+             onClose={handleClose}
+             fullWidth
+             maxWidth='sm'
+             fullScreen={isMobile}
+             PaperProps={{ sx: { borderRadius: isMobile ? 0 : '24px', p: 1 } }}>
             <DialogTitle sx={{ fontWeight: 800 }}>Provision New Clinic Instance</DialogTitle>
             <DialogContent>
                <Typography variant="body2" color="textSecondary" mb={3}>Deploy a fresh Clinova instance for a new medical facility. All default parameters will be initialized.</Typography>
@@ -351,89 +376,98 @@ export default function ClinicsPage() {
    );
 }
 
-function ClinicDetailsDialog({ open, onClose, clinic, onLogoUpload, isUploading }: any) {
+ function ClinicDetailsDialog({ open, onClose, clinic, onLogoUpload, isUploading }: any) {
+   const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
    const { data: stats, isLoading } = useClinicStats(clinic?._id);
-
+ 
    if (!clinic) return null;
-
+ 
    return (
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth='md' PaperProps={{ sx: { borderRadius: '30px', p: 1 } }}>
-         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 0 }}>
-            <Stack direction="row" spacing={3} alignItems="center">
-               <Box position="relative">
-                  <Avatar src={clinic?.logo_url} sx={{ width: 80, height: 80, boxShadow: '0 8px 16px rgba(0,0,0,0.1)', border: '4px solid white' }}>
-                     {clinic?.name?.charAt(0)}
-                  </Avatar>
-                  <label htmlFor="logo-upload-details">
-                     <input
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        id="logo-upload-details"
-                        type="file"
-                        onChange={(e) => onLogoUpload(e, clinic._id)}
-                     />
-                     <IconButton
-                        size="small"
-                        component="span"
-                        sx={{
-                           position: 'absolute',
-                           bottom: 0,
-                           right: 0,
-                           bgcolor: 'white',
-                           boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                           '&:hover': { bgcolor: '#F8FAFC' }
-                        }}
-                     >
-                        <Camera size={14} />
-                     </IconButton>
-                  </label>
-               </Box>
-               <Box>
-                  <Typography variant="h5" fontWeight="800" color="#0F172A">{clinic.name}</Typography>
-                  <Typography variant="body2" color="text.secondary" fontWeight="600">{clinic.email}</Typography>
-                  <Chip 
-                     label={clinic.plan} 
-                     size="small" 
-                     sx={{ mt: 1, textTransform: 'uppercase', fontSize: '10px', fontWeight: 800, bgcolor: '#F0F7FF', color: '#2F5FA5' }} 
-                  />
-               </Box>
-            </Stack>
-            {isUploading && <CircularProgress size={20} />}
-         </DialogTitle>
-         <DialogContent sx={{ mt: 4 }}>
+      <Dialog 
+         open={open} 
+         onClose={onClose} 
+         fullWidth 
+         maxWidth='md' 
+         fullScreen={isMobile}
+         PaperProps={{ sx: { borderRadius: { xs: 0, sm: '30px' }, p: { xs: 0, sm: 1 } } }}
+      >
+          <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 0, pt: { xs: 3, sm: 2 } }}>
+             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, sm: 3 }} alignItems="center" textAlign={{ xs: 'center', sm: 'left' }} sx={{ width: '100%' }}>
+                <Box position="relative">
+                   <Avatar src={clinic?.logo_url} sx={{ width: { xs: 60, sm: 80 }, height: { xs: 60, sm: 80 }, boxShadow: '0 8px 16px rgba(0,0,0,0.1)', border: '4px solid white', mx: 'auto' }}>
+                      {clinic?.name?.charAt(0)}
+                   </Avatar>
+                   <label htmlFor="logo-upload-details">
+                      <input
+                         accept="image/*"
+                         style={{ display: 'none' }}
+                         id="logo-upload-details"
+                         type="file"
+                         onChange={(e) => onLogoUpload(e, clinic._id)}
+                      />
+                      <IconButton
+                         size="small"
+                         component="span"
+                         sx={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: isMobile ? 'calc(50% - 35px)' : 0,
+                            bgcolor: 'white',
+                            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                            '&:hover': { bgcolor: '#F8FAFC' }
+                         }}
+                      >
+                         <Camera size={14} />
+                      </IconButton>
+                   </label>
+                </Box>
+                <Box sx={{ flexGrow: 1 }}>
+                   <Typography variant={isMobile ? "h6" : "h5"} fontWeight="800" color="#0F172A">{clinic.name}</Typography>
+                   <Typography variant="body2" color="text.secondary" fontWeight="600">{clinic.email}</Typography>
+                   <Chip 
+                      label={clinic.plan} 
+                      size="small" 
+                      sx={{ mt: 1, textTransform: 'uppercase', fontSize: '10px', fontWeight: 800, bgcolor: '#F0F7FF', color: '#2F5FA5' }} 
+                   />
+                </Box>
+             </Stack>
+             {isUploading && <CircularProgress size={20} />}
+          </DialogTitle>
+         <DialogContent sx={{ mt: { xs: 2, sm: 4 } }}>
             {isLoading ? (
                <Box display="flex" justifyContent="center" p={10}><CircularProgress thickness={4} /></Box>
             ) : (
-               <Grid container spacing={4}>
+               <Grid container spacing={{ xs: 2, sm: 4 }}>
                   {/* Performance Indicators */}
                   <Grid item xs={12} sm={4}>
-                     <Card variant="outlined" sx={{ p: 3, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
-                        <Users size={24} color="#2F5FA5" style={{ marginBottom: '8px' }} />
-                        <Typography variant="h4" fontWeight="800" color="#2F5FA5">{stats?.summary?.total_patients || 0}</Typography>
-                        <Typography variant="caption" color="text.secondary" fontWeight="700">ACTIVE PATIENTS</Typography>
+                     <Card variant="outlined" sx={{ p: { xs: 2, sm: 3 }, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
+                        <Users size={20} color="#2F5FA5" style={{ marginBottom: '8px' }} />
+                        <Typography variant="h4" fontWeight="800" color="#2F5FA5" sx={{ fontSize: { xs: '1.75rem', sm: '2.125rem' } }}>{stats?.summary?.total_patients || 0}</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700">PATIENTS</Typography>
                      </Card>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
-                     <Card variant="outlined" sx={{ p: 3, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
-                        <TrendingUp size={24} color="#5CC6C4" style={{ marginBottom: '8px' }} />
-                        <Typography variant="h4" fontWeight="800" color="#5CC6C4">{stats?.summary?.total_visits || 0}</Typography>
-                        <Typography variant="caption" color="text.secondary" fontWeight="700">VISIT VELOCITY</Typography>
+                  <Grid item xs={6} sm={4}>
+                     <Card variant="outlined" sx={{ p: { xs: 2, sm: 3 }, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
+                        <TrendingUp size={20} color="#5CC6C4" style={{ marginBottom: '8px' }} />
+                        <Typography variant="h5" fontWeight="800" color="#5CC6C4" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>{stats?.summary?.total_visits || 0}</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700">VISITS</Typography>
                      </Card>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
-                     <Card variant="outlined" sx={{ p: 3, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
-                        <Calendar1Icon size={24} color="#F59E0B" style={{ marginBottom: '8px' }} />
-                        <Typography variant="h5" fontWeight="800" color="#92400E" sx={{ minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                           {stats?.summary?.last_use ? format(new Date(stats.summary.last_use), 'MMM dd') : 'Never'}
+                  <Grid item xs={6} sm={4}>
+                     <Card variant="outlined" sx={{ p: { xs: 2, sm: 3 }, textAlign: 'center', borderRadius: '20px', bgcolor: '#F8FAFC', border: '1px solid #E3EEF7' }}>
+                        <Calendar1Icon size={20} color="#F59E0B" style={{ marginBottom: '8px' }} />
+                        <Typography variant="h5" fontWeight="800" color="#92400E" sx={{ minHeight: { xs: '30px', sm: '36px' }, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                           {stats?.summary?.last_use ? format(new Date(stats.summary.last_use), 'MMM dd') : 'N/A'}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" fontWeight="700">RECENT ACTIVITY</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700">ACTIVITY</Typography>
                      </Card>
                   </Grid>
-
+ 
                   {/* Revenue Visualization */}
                   <Grid item xs={12}>
                      <Typography variant="subtitle1" fontWeight="800" color="#0F172A" mb={3}>Fiscal Trajectory (₹)</Typography>
-                     <Box sx={{ height: 250 }}>
+                     <Box sx={{ height: { xs: 200, sm: 250 } }}>
                         <ResponsiveContainer width="100%" height="100%">
                            <AreaChart data={stats?.charts?.revenue || []}>
                               <defs>
@@ -443,25 +477,25 @@ function ClinicDetailsDialog({ open, onClose, clinic, onLogoUpload, isUploading 
                                  </linearGradient>
                               </defs>
                               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                              <XAxis dataKey="month" tick={{ fontSize: 11, fontWeight: 600, fill: '#64748B' }} axisLine={false} tickLine={false} />
-                              <YAxis tick={{ fontSize: 11, fontWeight: 600, fill: '#64748B' }} axisLine={false} tickLine={false} />
+                              <XAxis dataKey="month" tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} axisLine={false} tickLine={false} />
+                              <YAxis tick={{ fontSize: 10, fontWeight: 600, fill: '#64748B' }} axisLine={false} tickLine={false} />
                               <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
                               <Area type="monotone" dataKey="revenue" stroke="#2F5FA5" strokeWidth={3} fill="url(#colorAdminRev)" />
                            </AreaChart>
                         </ResponsiveContainer>
                      </Box>
                   </Grid>
-
+ 
                   {/* Infrastructure Metadata */}
                   <Grid item xs={12}>
                      <Divider sx={{ my: 1, borderColor: '#F1F5F9' }} />
                      <Typography variant="subtitle1" fontWeight="800" color="#0F172A" my={3}>Infrastructure Metadata</Typography>
-                     <Grid container spacing={4}>
+                     <Grid container spacing={{ xs: 2, sm: 4 }}>
                         <Grid item xs={12} sm={6}>
                            <Stack direction="row" spacing={2}>
                               <Box sx={{ p: 1, bgcolor: '#F1F5F9', borderRadius: '10px' }}><MapPin size={18} color="#64748B" /></Box>
                               <Box>
-                                 <Typography variant="caption" color="text.secondary" fontWeight="700">PHYSICAL PROTOCOL (ADDRESS)</Typography>
+                                 <Typography variant="caption" color="text.secondary" fontWeight="700">ADDRESS</Typography>
                                  <Typography variant="body2" fontWeight="600" color="#1E293B">{clinic.address || 'N/A'}</Typography>
                               </Box>
                            </Stack>
@@ -470,7 +504,7 @@ function ClinicDetailsDialog({ open, onClose, clinic, onLogoUpload, isUploading 
                            <Stack direction="row" spacing={2}>
                               <Box sx={{ p: 1, bgcolor: '#F1F5F9', borderRadius: '10px' }}><Phone size={18} color="#64748B" /></Box>
                               <Box>
-                                 <Typography variant="caption" color="text.secondary" fontWeight="700">COMMUNICATION VECTOR</Typography>
+                                 <Typography variant="caption" color="text.secondary" fontWeight="700">PHONE</Typography>
                                  <Typography variant="body2" fontWeight="600" color="#1E293B">{clinic.phone || 'N/A'}</Typography>
                               </Box>
                            </Stack>
@@ -480,8 +514,8 @@ function ClinicDetailsDialog({ open, onClose, clinic, onLogoUpload, isUploading 
                </Grid>
             )}
          </DialogContent>
-         <DialogActions sx={{ p: 3, pt: 1 }}>
-            <Button onClick={onClose} variant="outlined" sx={{ borderRadius: '12px', px: 4, fontWeight: 700, borderColor: '#E3EEF7' }}>Dismiss</Button>
+         <DialogActions sx={{ p: { xs: 2, sm: 3 }, pt: 1 }}>
+            <Button onClick={onClose} variant="outlined" sx={{ borderRadius: '12px', px: 4, fontWeight: 700, borderColor: '#E3EEF7', width: { xs: '100%', sm: 'auto' } }}>Dismiss</Button>
          </DialogActions>
       </Dialog>
    );

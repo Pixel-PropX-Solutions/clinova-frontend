@@ -36,126 +36,164 @@ const Navbar = () => {
       { name: 'OPD/View', href: '/view' },
    ];
 
-   const drawer = (
-      <Box
-         minWidth={200}
-         onClick={handleDrawerToggle}
-         sx={{ textAlign: 'center' }}>
-         <Typography
-            variant='h6'
-            sx={{ my: 2 }}>
-            Omkary&apos;s Clinic
-         </Typography>
-         <List>
-            {navLinks.map((link) => (
-               <ListItem key={link.name}>
-                  <Link
-                     href={link.href}
-                     passHref
-                     style={{ textDecoration: 'none', width: '100%' }}>
-                     <ListItemText
-                        primary={link.name}
-                        sx={{
-                           textAlign: 'center',
-                           textDecoration: 'none',
-                           color: 'inherit',
-                        }}
-                     />
-                  </Link>
-               </ListItem>
-            ))}
-            <ListItem>
-               <Button
-                  fullWidth
-                  variant='outlined'
-                  color='error'
-                  onClick={() => {
-                     handleDrawerToggle();
-                     logoutMutation.mutate();
-                  }}
-                  disabled={logoutMutation.isPending}>
-                  Logout
-               </Button>
-            </ListItem>
-         </List>
-      </Box>
-   );
+    const drawer = (
+       <Box
+          sx={{ 
+             width: 280, 
+             p: 3, 
+             display: 'flex', 
+             flexDirection: 'column', 
+             height: '100%',
+             bgcolor: 'white'
+          }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4, px: 1 }}>
+             <Image
+                src='/logo.png'
+                alt='Logo'
+                width={32}
+                height={32}
+                style={{ borderRadius: '50%' }}
+             />
+             <Typography variant="h6" fontWeight="800" color="primary">Clinova</Typography>
+          </Box>
+          
+          <List sx={{ flexGrow: 1 }}>
+             {navLinks.map((link) => (
+                <ListItem key={link.name} disablePadding sx={{ mb: 1 }}>
+                   <Link
+                      href={link.href}
+                      passHref
+                      style={{ textDecoration: 'none', width: '100%' }}>
+                      <Button
+                         fullWidth
+                         onClick={handleDrawerToggle}
+                         sx={{
+                            justifyContent: 'flex-start',
+                            py: 1.5,
+                            px: 2,
+                            borderRadius: '12px',
+                            color: '#475569',
+                            fontWeight: 600,
+                            '&:hover': { bgcolor: '#F1F5F9', color: 'primary.main' }
+                         }}>
+                         {link.name}
+                      </Button>
+                   </Link>
+                </ListItem>
+             ))}
+          </List>
 
-   return (
-      <AppBar
-         position='static'
-         color='inherit'>
-         <Toolbar>
-            {/* Logo */}
-            <Box
-               display='flex'
-               alignItems='center'
-               gap={1}
-               sx={{ flexGrow: 1 }}>
-               <Image
-                  src='/logo.png'
-                  alt='Logo'
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: '50%' }}
-               />
-               <Typography
-                  variant='h6'
-                  sx={{ flexGrow: 1 }}>
-                  <Link
-                     href='/'
-                     style={{ textDecoration: 'none', color: 'inherit' }}>
-                     Omkary&apos;s Clinic
-                  </Link>
-               </Typography>
-            </Box>
-
-            {
-               isMobile ?
-                  // Mobile Menu
-                  <>
-                     <IconButton
-                        color='inherit'
-                        edge='start'
-                        onClick={handleDrawerToggle}>
-                        <MenuIcon />
-                     </IconButton>
-                     <Drawer
-                        anchor='left'
-                        open={mobileOpen}
-                        onClose={handleDrawerToggle}>
-                        {drawer}
-                     </Drawer>
-                  </>
-                  // Desktop Menu
-                  : <Box
-                     display='flex'
-                     gap={2}
-                     alignItems='center'>
-                     {navLinks.map((link) => (
-                        <Link
-                           href={link.href}
-                           key={link.name}
-                           passHref>
-                           <Button sx={{ color: 'black' }}>{link.name}</Button>
-                        </Link>
-                     ))}
-                     <Button
-                        sx={{
-                           color: 'black',
-                           ml: 2,
-                           border: '1px solid black',
-                        }}
-                        onClick={() => logoutMutation.mutate()}
-                        disabled={logoutMutation.isPending}>
-                        Logout
-                     </Button>
-                  </Box>
-
-            }
-         </Toolbar>{' '}
-      </AppBar>
-   );
+          <Box sx={{ pt: 2, borderTop: '1px solid #F1F5F9' }}>
+             <Button
+                fullWidth
+                variant='outlined'
+                color='error'
+                onClick={() => {
+                   handleDrawerToggle();
+                   logoutMutation.mutate();
+                }}
+                disabled={logoutMutation.isPending}
+                sx={{ borderRadius: '12px', py: 1.5, fontWeight: 700 }}>
+                Logout
+             </Button>
+          </Box>
+       </Box>
+    );
+ 
+    return (
+       <AppBar
+          position='sticky'
+          elevation={0}
+          sx={{ 
+             bgcolor: 'white', 
+             borderBottom: '1px solid #E3EEF7',
+             zIndex: (theme) => theme.zIndex.drawer + 1
+          }}>
+          <Toolbar sx={{ justifyContent: 'space-between' }}>
+             {/* Logo */}
+             <Box
+                display='flex'
+                alignItems='center'
+                gap={1.5}>
+                <Image
+                   src='/logo.png'
+                   alt='Logo'
+                   width={isMobile ? 32 : 40}
+                   height={isMobile ? 32 : 40}
+                   style={{ borderRadius: '50%' }}
+                />
+                <Typography
+                   variant={isMobile ? 'h6' : 'h5'}
+                   fontWeight="800"
+                   color="primary">
+                   <Link
+                      href='/'
+                      style={{ textDecoration: 'none', color: 'inherit' }}>
+                      Clinova
+                   </Link>
+                </Typography>
+             </Box>
+ 
+             {
+                isMobile ?
+                   // Mobile Menu
+                   <>
+                      <IconButton
+                         color='inherit'
+                         edge='end'
+                         onClick={handleDrawerToggle}
+                         sx={{ color: '#475569' }}>
+                         <MenuIcon />
+                      </IconButton>
+                      <Drawer
+                         anchor='left'
+                         open={mobileOpen}
+                         onClose={handleDrawerToggle}
+                         PaperProps={{ sx: { border: 'none', boxShadow: '20px 0 40px rgba(0,0,0,0.05)' } }}>
+                         {drawer}
+                      </Drawer>
+                   </>
+                   // Desktop Menu
+                   : <Box
+                      display='flex'
+                      gap={1}
+                      alignItems='center'>
+                      {navLinks.map((link) => (
+                         <Link
+                            href={link.href}
+                            key={link.name}
+                            passHref>
+                            <Button 
+                               sx={{ 
+                                  color: '#475569', 
+                                  fontWeight: 600, 
+                                  px: 2, 
+                                  borderRadius: '8px',
+                                  '&:hover': { bgcolor: '#F1F5F9', color: 'primary.main' }
+                               }}>
+                               {link.name}
+                            </Button>
+                         </Link>
+                      ))}
+                      <Button
+                         variant="outlined"
+                         color="error"
+                         onClick={() => logoutMutation.mutate()}
+                         disabled={logoutMutation.isPending}
+                         sx={{ 
+                            ml: 2, 
+                            borderRadius: '10px', 
+                            fontWeight: 700,
+                            px: 3
+                         }}>
+                         Logout
+                      </Button>
+                   </Box>
+ 
+             }
+          </Toolbar>
+       </AppBar>
+    );
 };
 
 export default Navbar;

@@ -4,10 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
    Box,
-   Backdrop,
    Button,
    Typography,
-   Paper,
    TextField,
    Grid,
    CircularProgress,
@@ -20,16 +18,16 @@ import {
    CardContent,
    Divider,
    Stack,
+   useTheme,
+   useMediaQuery,
 } from '@mui/material';
 import {
    User,
    Phone,
    MapPin,
    Calendar as CalendarIcon,
-   Stethoscope,
    CreditCard,
    Printer,
-   Search as SearchIcon,
    Activity,
    ChevronLeft,
 } from 'lucide-react';
@@ -37,10 +35,14 @@ import { useSearchPatient, useCreatePatient } from '@/hooks/api/usePatients';
 import { useCreateVisit } from '@/hooks/api/useVisits';
 import { useTemplates } from '@/hooks/api/useTemplates';
 import { useClinicProfile } from '@/hooks/api/useSettings';
-import { generatePDF } from '@/hooks/api/usePDF';
+import { generateAndPrintPDF, generatePDF } from '@/hooks/api/usePDF';
+import BackDropLoading from '@/container/BackdropLoader';
 
 export default function PatientsPage() {
    const router = useRouter();
+   const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
    const [isNavigating, startNavigation] = React.useTransition();
 
    const [formState, setFormState] = useState({
@@ -136,10 +138,9 @@ export default function PatientsPage() {
             {
                onSuccess: (visitData) => {
                   if (formState.template_id && visitData._id) {
-                     generatePDF(
+                     generateAndPrintPDF(
                         visitData._id,
                         formState.template_id,
-                        `parchi_${visitData._id}.pdf`,
                      );
                   }
 
@@ -193,11 +194,8 @@ export default function PatientsPage() {
 
    return (
       <Box maxWidth='xl' mx='auto'>
-         <Backdrop
-            open={isNavigating}
-            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2000 }}>
-            <CircularProgress color='inherit' />
-         </Backdrop>
+         <BackDropLoading isLoading={isNavigating} />
+
          <Button
             startIcon={<ChevronLeft size={18} />}
             onClick={handleNavigateBack}
@@ -205,11 +203,11 @@ export default function PatientsPage() {
             sx={{ mb: 3, color: '#64748B', fontWeight: 600, '&:hover': { bgcolor: 'transparent', color: 'primary.main' } }}>
             Back to Patient Directory
          </Button>
-         <Box sx={{ mb: 4 }}>
-            <Typography variant='h4' fontWeight='800' color="primary" gutterBottom>
+         <Box sx={{ mb: { xs: 3, md: 5 } }}>
+            <Typography variant='h4' fontWeight='800' color="primary" gutterBottom sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                Patient Registration
             </Typography>
-            <Typography variant='body1' color='text.secondary'>
+            <Typography variant='body1' color='text.secondary' sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                Complete the form below to register a new patient or update existing records.
             </Typography>
          </Box>

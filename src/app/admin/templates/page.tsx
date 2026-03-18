@@ -32,6 +32,8 @@ import {
    Chip,
    Tooltip as MuiTooltip,
    Grid,
+   useTheme,
+   useMediaQuery,
 } from '@mui/material';
 import { 
    Plus, 
@@ -54,6 +56,10 @@ import {
 } from '@/hooks/api/useTemplates';
 
 export default function AdminTemplatesPage() {
+   const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+
    const { data: clinics, isLoading: loadingClinics } = useClinics();
    const { data: templates, isLoading: loadingTemplates } = useAdminTemplates();
    const createTemplate = useCreateAdminTemplate();
@@ -135,28 +141,30 @@ export default function AdminTemplatesPage() {
       <Box maxWidth="xl" mx="auto">
          <Box
             display='flex'
+            flexDirection={{ xs: 'column', sm: 'row' }}
             justifyContent='space-between'
-            alignItems='center'
-            mb={5}
-            flexWrap="wrap"
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            mb={{ xs: 3, md: 5 }}
             gap={2}>
             <Box>
                <Typography
                   variant='h4'
                   fontWeight='800'
                   color="primary"
-                  gutterBottom>
+                  gutterBottom
+                  sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                   Dynamic Blueprints
                </Typography>
-               <Typography variant='body1' color='text.secondary'>
+               <Typography variant='body1' color='text.secondary' sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                   Architect custom PDF layouts for invoices, parchis, and clinical reports.
                </Typography>
             </Box>
             <Button
                variant='contained'
+               fullWidth={isMobile}
                startIcon={<Plus size={18} />}
                onClick={() => setOpen(true)}
-               sx={{ borderRadius: '12px', height: 48, px: 3 }}>
+               sx={{ borderRadius: '12px', height: 48, px: { xs: 2, sm: 3 } }}>
                Draft New Blueprint
             </Button>
          </Box>
@@ -165,49 +173,60 @@ export default function AdminTemplatesPage() {
             <Box display="flex" justifyContent="center" py={10}>
                <CircularProgress thickness={4} />
             </Box>
-         :  <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
+         :  <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
                <TableContainer>
                   <Table>
                      <TableHead sx={{ bgcolor: '#F8FAFC' }}>
                         <TableRow>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2 }}>BLUEPRINT NAME</TableCell>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>DOCUMENT TYPE</TableCell>
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>SCOPE</TableCell>
-                           <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>ACTIONS</TableCell>
-                        </TableRow>
+                           <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2, fontSize: { xs: '11px', sm: '12px' } }}>BLUEPRINT NAME</TableCell>
+                           {!isMobile && <TableCell sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>DOCUMENT TYPE</TableCell>}
+                           {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>SCOPE</TableCell>}
+                           <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>ACTIONS</TableCell>
+                         </TableRow>
                      </TableHead>
                      <TableBody>
                         {Array.isArray(templates) && templates.length > 0 ?
                            templates.map((template: any) => (
                               <TableRow key={template._id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                  <TableCell>
-                                    <Stack direction="row" spacing={2} alignItems="center">
-                                       <Box sx={{ p: 1, bgcolor: '#F1F5F9', borderRadius: '8px', color: '#2F5FA5' }}>
+                                    <Stack direction="row" spacing={{ xs: 1, sm: 2 }} alignItems="center">
+                                       <Box sx={{ p: 1, bgcolor: '#F1F5F9', borderRadius: '8px', color: '#2F5FA5', display: { xs: 'none', sm: 'block' } }}>
                                           <FileText size={18} />
                                        </Box>
-                                       <Typography variant='subtitle2' fontWeight='700' color="#0F172A">
-                                          {template.template_name}
-                                       </Typography>
+                                       <Box>
+                                          <Typography variant='subtitle2' fontWeight='700' color="#0F172A" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+                                             {template.template_name}
+                                          </Typography>
+                                          {isMobile && (
+                                             <Typography variant='caption' color='text.secondary' sx={{ display: 'block', mt: 0.5, textTransform: 'uppercase', fontWeight: 700, fontSize: '9px' }}>
+                                                {template.template_type?.replace('_', ' ')}
+                                             </Typography>
+                                          )}
+                                       </Box>
                                     </Stack>
                                  </TableCell>
-                                 <TableCell>
-                                    <Chip 
-                                       label={template.template_type?.replace('_', ' ')} 
-                                       size="small" 
-                                       sx={{ 
-                                          textTransform: 'uppercase', 
-                                          fontWeight: 800, 
-                                          fontSize: '10px',
-                                          bgcolor: '#F1F5F9',
-                                          color: '#475569'
-                                       }} 
-                                    />
-                                 </TableCell>
-                                 <TableCell>
-                                    <Stack direction="row" spacing={1} alignItems="center">
-                                       {getClinicName(template)}
-                                    </Stack>
-                                 </TableCell>
+                                 {!isMobile && (
+                                    <TableCell>
+                                       <Chip
+                                          label={template.template_type?.replace('_', ' ')}
+                                          size="small"
+                                          sx={{
+                                             textTransform: 'uppercase',
+                                             fontWeight: 800,
+                                             fontSize: '10px',
+                                             bgcolor: '#F1F5F9',
+                                             color: '#475569'
+                                          }}
+                                       />
+                                    </TableCell>
+                                 )}
+                                 {!isTablet && (
+                                    <TableCell>
+                                       <Stack direction="row" spacing={1} alignItems="center">
+                                          {getClinicName(template)}
+                                       </Stack>
+                                    </TableCell>
+                                 )}
                                  <TableCell align='right'>
                                     <Stack direction="row" spacing={1} justifyContent="flex-end">
                                        <IconButton
@@ -229,12 +248,12 @@ export default function AdminTemplatesPage() {
                               </TableRow>
                            ))
                         :  <TableRow>
-                              <TableCell colSpan={4} align='center' sx={{ py: 10 }}>
-                                 <Box sx={{ opacity: 0.2, mb: 2 }}>
-                                    <FileText size={64} />
+                              <TableCell colSpan={isTablet ? (isMobile ? 2 : 3) : 4} align='center' sx={{ py: 10 }}>
+                                 <Box sx={{ opacity: 0.1, mb: 2 }}>
+                                    <FileText size={isMobile ? 48 : 64} />
                                  </Box>
-                                 <Typography variant='h6' color='text.secondary' fontWeight="700">No Blueprints Defined</Typography>
-                                 <Typography variant='body2' color='text.secondary'>Create a document template to enable PDF generation.</Typography>
+                                 <Typography variant='h6' color='text.secondary' fontWeight="700" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>No Blueprints Defined</Typography>
+                                 <Typography variant='body2' color='text.secondary' sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>Create a document template to enable PDF generation.</Typography>
                               </TableCell>
                            </TableRow>
                         }
@@ -249,16 +268,28 @@ export default function AdminTemplatesPage() {
             open={open}
             onClose={handleClose}
             fullWidth
+            fullScreen={isMobile}
             maxWidth='md'
-            PaperProps={{ sx: { borderRadius: '24px', p: 1 } }}>
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-               <Typography variant="h5" fontWeight="800">{editingId ? 'Refine Blueprint' : 'Architect New Blueprint'}</Typography>
+            PaperProps={{ sx: { borderRadius: isMobile ? 0 : '24px', p: { xs: 0, sm: 1 } } }}>
+            <DialogTitle sx={{ 
+               display: 'flex', 
+               flexDirection: { xs: 'column', sm: 'row' },
+               justifyContent: 'space-between', 
+               alignItems: isMobile ? 'flex-start' : 'center',
+               gap: 2,
+               pb: 1
+            }}>
+               <Typography variant={isMobile ? "h6" : "h5"} fontWeight="800">
+                  {editingId ? 'Refine Blueprint' : 'Architect New Blueprint'}
+               </Typography>
                <Tabs
                   value={tabIndex}
                   onChange={(e, val) => setTabIndex(val)}
+                  variant={isMobile ? "fullWidth" : "standard"}
                   sx={{ 
+                     'width': isMobile ? '100%' : 'auto',
                      '& .MuiTabs-indicator': { height: 3, borderRadius: '3px' },
-                     '& .MuiTab-root': { fontWeight: 800, fontSize: '13px' }
+                     '& .MuiTab-root': { fontWeight: 800, fontSize: '13px', minHeight: 48 }
                   }}>
                   <Tab icon={<Code size={16} />} iconPosition="start" label='Structure' />
                   <Tab icon={<Eye size={16} />} iconPosition="start" label='Simulation' />
@@ -359,14 +390,16 @@ export default function AdminTemplatesPage() {
                      <Paper
                         elevation={0}
                         sx={{
-                           p: 4,
+                           p: { xs: 1.5, sm: 4 },
                            borderRadius: '20px',
                            border: '1px solid #E3EEF7',
-                           minHeight: 500,
+                           minHeight: { xs: 300, sm: 500 },
                            backgroundColor: '#fff',
-                           boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.02)'
+                           boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.02)',
+                           overflowX: 'auto'
                         }}>
                         <div
+                           style={{ width: '100%', minWidth: isMobile ? '300px' : 'auto' }}
                            dangerouslySetInnerHTML={{
                               __html:
                                  formData.html_content ||

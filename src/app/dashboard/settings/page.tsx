@@ -22,6 +22,8 @@ import {
    InputLabel,
    Stack,
    Chip,
+   useTheme,
+   useMediaQuery,
 } from '@mui/material';
 import {
    Camera,
@@ -64,6 +66,10 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function SettingsPage() {
+   const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+   
    const [tabValue, setTabValue] = useState(0);
    const { data: clinic, isLoading: isClinicLoading } = useClinicProfile();
    const { data: templates } = useTemplates();
@@ -155,28 +161,30 @@ export default function SettingsPage() {
       );
    }
 
-   return (
+    return (
       <Box sx={{ maxWidth: '1200px', mx: 'auto' }}>
-         <Box sx={{ mb: 4 }}>
-            <Typography variant='h4' fontWeight='800' color="primary" gutterBottom>
+         <Box sx={{ mb: { xs: 3, md: 4 } }}>
+            <Typography variant='h4' fontWeight='800' color="primary" gutterBottom sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                Clinic Settings
             </Typography>
-            <Typography variant='body1' color='text.secondary'>
+            <Typography variant='body1' color='text.secondary' sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                Manage your clinic identity, customize prescriptions, and configure security.
             </Typography>
          </Box>
 
-         <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
+         <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
             <Box sx={{ borderBottom: '1px solid #E3EEF7', bgcolor: '#F8FAFC' }}>
                <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
+                  variant={isMobile ? "scrollable" : "standard"}
+                  scrollButtons={isMobile ? "auto" : false}
                   sx={{
-                     'px': 3,
+                     'px': { xs: 1, sm: 3 },
                      '& .MuiTab-root': {
-                        'py': 2.5,
-                        'minHeight': 72,
-                        'fontSize': '15px',
+                        'py': { xs: 2, sm: 2.5 },
+                        'minHeight': { xs: 60, sm: 72 },
+                        'fontSize': { xs: '13px', sm: '15px' },
                         'fontWeight': 600,
                         'textTransform': 'none',
                         'color': '#64748B',
@@ -185,33 +193,33 @@ export default function SettingsPage() {
                         'display': 'flex',
                         'flexDirection': 'row',
                         'alignItems': 'center',
-                        'gap': 1
+                        'gap': 1,
+                        'minWidth': { xs: 'auto', sm: 160 }
                      },
                      '& .MuiTabs-indicator': { height: 3, borderRadius: '3px 3px 0 0' },
                   }}>
-                  <Tab icon={<Building size={18} />} iconPosition='start' label='Clinic Profile' />
-                  <Tab icon={<FileText size={18} />} iconPosition='start' label='PDF Templates' />
-                  <Tab icon={<Lock size={18} />} iconPosition='start' label='Security' />
+                  <Tab icon={<Building size={16} />} iconPosition='start' label='Profile' />
+                  <Tab icon={<FileText size={16} />} iconPosition='start' label='Templates' />
+                  <Tab icon={<Lock size={16} />} iconPosition='start' label='Security' />
                </Tabs>
             </Box>
 
-            <Box sx={{ p: { xs: 3, md: 5 } }}>
+            <Box sx={{ p: { xs: 2, sm: 4, md: 5 } }}>
                {/* Tab 0: Clinic Profile */}
                <TabPanel value={tabValue} index={0}>
-                  <Grid container spacing={6}>
+                  <Grid container spacing={{ xs: 4, md: 6 }}>
                      <Grid item xs={12} md={4}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: { xs: 1, md: 2 } }}>
                            <Box sx={{ position: 'relative', mb: 3 }}>
                               <Avatar
                                  src={clinic?.logo_url}
                                  sx={{
-                                    width: 160,
-                                    height: 160,
+                                    width: { xs: 120, md: 160 },
+                                    height: { xs: 120, md: 160 },
                                     boxShadow: '0 20px 40px rgba(15, 23, 42, 0.1)',
-                                    border: '6px solid white',
-                                    fontSize: '3rem',
+                                    border: '1px solid #E3EEF7',
+                                    fontSize: { xs: '2rem', md: '3rem' },
                                     fontWeight: '800',
-                                    bgcolor: 'primary.main',
                                     color: 'white'
                                  }}>
                                  {clinic?.name?.charAt(0)}
@@ -229,23 +237,24 @@ export default function SettingsPage() {
                                     component='span'
                                     sx={{
                                        'position': 'absolute',
-                                       'bottom': 10,
-                                       'right': 10,
+                                       'bottom': 5,
+                                       'right': 5,
                                        'bgcolor': 'white',
                                        'boxShadow': '0 4px 12px rgba(0,0,0,0.1)',
                                        '&:hover': { bgcolor: '#F1F5F9', transform: 'scale(1.1)' },
-                                       'width': 44,
-                                       'height': 44,
-                                       'transition': 'all 0.2s'
+                                       'width': { xs: 36, md: 44 },
+                                       'height': { xs: 36, md: 44 },
+                                       'transition': 'all 0.2s',
+                                       'border': '1px solid #E3EEF7',
                                     }}>
-                                    <Camera size={22} />
+                                    <Camera size={20} />
                                  </IconButton>
                               </label>
                            </Box>
-                           <Typography variant='h6' fontWeight='700' gutterBottom>
+                           <Typography variant='h6' fontWeight='700' gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
                               Clinic Logo
                            </Typography>
-                           <Typography variant='body2' color='text.secondary' textAlign='center' sx={{ px: 2 }}>
+                           <Typography variant='body2' color='text.secondary' textAlign='center' sx={{ px: 2, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
                               Upload your official clinic logo. This will appear on all prescriptions and receipts.
                            </Typography>
                            {uploadLogo.isPending && <CircularProgress size={24} sx={{ mt: 3 }} />}
@@ -254,8 +263,8 @@ export default function SettingsPage() {
 
                      <Grid item xs={12} md={8}>
                         <form onSubmit={handleProfileSubmit}>
-                           <Stack spacing={4}>
-                              <Typography variant="subtitle2" color="primary" fontWeight="700" sx={{ letterSpacing: '1px', textTransform: 'uppercase' }}>
+                           <Stack spacing={{ xs: 3, md: 4 }}>
+                              <Typography variant="subtitle2" color="primary" fontWeight="700" sx={{ letterSpacing: '1px', textTransform: 'uppercase', fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
                                  Information Details
                               </Typography>
 
@@ -267,8 +276,8 @@ export default function SettingsPage() {
                                  required
                               />
 
-                              <Grid container rowGap={3} justifyContent='space-between'>
-                                 <Grid item xs={12} md={5.5}>
+                              <Grid container  justifyContent={'space-between'}>
+                                 <Grid item xs={12} sm={5.9}>
                                     <TextField
                                        label='Public Phone Number'
                                        fullWidth
@@ -276,7 +285,7 @@ export default function SettingsPage() {
                                        onChange={(e) => setProfileState({ ...profileState, phone: e.target.value })}
                                     />
                                  </Grid>
-                                 <Grid item xs={12} md={5.5}>
+                                 <Grid item xs={12} sm={5.9}>
                                     <TextField
                                        label='Administrative Email'
                                        fullWidth
@@ -291,7 +300,7 @@ export default function SettingsPage() {
                                  label='Full Clinic Address'
                                  fullWidth
                                  multiline
-                                 rows={4}
+                                 rows={isMobile ? 3 : 4}
                                  value={profileState.address}
                                  onChange={(e) => setProfileState({ ...profileState, address: e.target.value })}
                               />
@@ -300,6 +309,7 @@ export default function SettingsPage() {
                                  <Button
                                     type='submit'
                                     variant='contained'
+                                    fullWidth={isMobile}
                                     startIcon={<Save size={20} />}
                                     disabled={updateProfile.isPending}
                                     sx={{ px: 5, height: 52, borderRadius: '12px', fontSize: '16px' }}>
@@ -314,18 +324,18 @@ export default function SettingsPage() {
 
                {/* Tab 1: PDF Templates */}
                <TabPanel value={tabValue} index={1}>
-                  <Grid container spacing={4}>
+                  <Grid container spacing={{ xs: 3, md: 4 }}>
                      <Grid item xs={12} md={4}>
-                        <Box sx={{ mb: 4 }}>
-                           <Typography variant='h6' fontWeight='700'>
+                        <Box sx={{ mb: { xs: 2, md: 4 } }}>
+                           <Typography variant='h6' fontWeight='700' sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
                               Design Templates
                            </Typography>
-                           <Typography variant='body2' color='text.secondary'>
+                           <Typography variant='body2' color='text.secondary' sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
                               Select a visual style for your PDF exports.
                            </Typography>
                         </Box>
 
-                        <Stack spacing={2} sx={{ maxHeight: 600, overflowY: 'auto', pr: 1 }}>
+                        <Stack spacing={2} sx={{ maxHeight: { xs: 300, md: 600 }, overflowY: 'auto', pr: 1 }}>
                            {templates?.map((t: any) => {
                               const isDefault = clinic?.default_template_id === t._id;
                               const isPreviewing = previewTemplate?._id === t._id;
@@ -347,22 +357,22 @@ export default function SettingsPage() {
                                           transform: 'translateY(-2px)'
                                        },
                                     }}>
-                                    <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+                                    <CardContent sx={{ p: { xs: 1.5, sm: 2.5 }, '&:last-child': { pb: { xs: 1.5, sm: 2.5 } } }}>
                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                           <Box>
-                                             <Typography variant='subtitle1' fontWeight='700' color={isPreviewing ? 'primary.main' : '#0F172A'}>
+                                             <Typography variant='subtitle1' fontWeight='700' color={isPreviewing ? 'primary.main' : '#0F172A'} sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
                                                 {t.template_name}
                                              </Typography>
                                              <Stack direction="row" spacing={1} mt={1}>
                                                 {t.is_global && (
-                                                   <Chip label="System" size="small" sx={{ height: 20, fontSize: '10px', fontWeight: 700, bgcolor: '#F1F5F9' }} />
+                                                   <Chip label="System" size="small" sx={{ height: 18, fontSize: '9px', fontWeight: 700, bgcolor: '#F1F5F9' }} />
                                                 )}
                                                 {isDefault && (
                                                    <Chip
-                                                      icon={<CheckCircle2 size={12} color="#166534" />}
+                                                      icon={<CheckCircle2 size={10} color="#166534" />}
                                                       label="Active"
                                                       size="small"
-                                                      sx={{ height: 20, fontSize: '10px', fontWeight: 700, bgcolor: '#DCFCE7', color: '#166534' }}
+                                                      sx={{ height: 18, fontSize: '9px', fontWeight: 700, bgcolor: '#DCFCE7', color: '#166534' }}
                                                    />
                                                 )}
                                              </Stack>
@@ -376,7 +386,7 @@ export default function SettingsPage() {
                                                    setDefaultTemplate.mutate(t._id);
                                                 }}
                                                 disabled={setDefaultTemplate.isPending}
-                                                sx={{ borderRadius: '8px', textTransform: 'none', px: 2 }}>
+                                                sx={{ borderRadius: '8px', textTransform: 'none', px: 1.5, fontSize: '0.75rem' }}>
                                                 Set Default
                                              </Button>
                                           )}
@@ -393,14 +403,14 @@ export default function SettingsPage() {
                            bgcolor: '#F1F5F9',
                            borderRadius: '24px',
                            border: '1px solid #E2E8F0',
-                           height: { xs: 500, md: 700 },
+                           height: { xs: 400, sm: 500, md: 700 },
                            display: 'flex',
                            flexDirection: 'column',
                            overflow: 'hidden'
                         }}>
                            <Box sx={{
-                              px: 3,
-                              py: 2,
+                              px: 2,
+                              py: 1.5,
                               bgcolor: 'white',
                               borderBottom: '1px solid #E2E8F0',
                               display: 'flex',
@@ -408,21 +418,21 @@ export default function SettingsPage() {
                               alignItems: 'center'
                            }}>
                               <Stack direction="row" spacing={1} alignItems="center">
-                                 <Eye size={16} color="#64748B" />
-                                 <Typography variant='caption' fontWeight='700' color='#64748B' sx={{ letterSpacing: '1px' }}>
+                                 <Eye size={14} color="#64748B" />
+                                 <Typography variant='caption' fontWeight='700' color='#64748B' sx={{ letterSpacing: '1px', fontSize: '9px' }}>
                                     PREVIEW MODE
                                  </Typography>
                               </Stack>
                               {previewTemplate && (
-                                 <Typography variant='subtitle2' color='primary' fontWeight='800'>
+                                 <Typography variant='subtitle2' color='primary' fontWeight='800' sx={{ fontSize: '0.8rem' }}>
                                     {previewTemplate.template_name}
                                  </Typography>
                               )}
                            </Box>
 
-                           <Box sx={{ flexGrow: 1, p: 3, display: 'flex', justifyContent: 'center', bgcolor: '#E2E8F0' }}>
+                           <Box sx={{ flexGrow: 1, p: { xs: 1, sm: 3 }, display: 'flex', justifyContent: 'center', bgcolor: '#E2E8F0' }}>
                               {previewTemplate ? (
-                                 <Paper elevation={4} sx={{ width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden' }}>
+                                 <Paper elevation={4} sx={{ width: '100%', height: '100%', borderRadius: '4px', overflow: 'hidden' }}>
                                     <iframe
                                        title={`template-preview-${previewTemplate._id}`}
                                        srcDoc={previewTemplate.html_content}
@@ -431,8 +441,8 @@ export default function SettingsPage() {
                                  </Paper>
                               ) : (
                                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.5 }}>
-                                    <FileText size={64} />
-                                    <Typography mt={2}>Select a template to preview</Typography>
+                                    <FileText size={48} />
+                                    <Typography mt={2} variant="body2">Select a template</Typography>
                                  </Box>
                               )}
                            </Box>
@@ -443,16 +453,16 @@ export default function SettingsPage() {
 
                {/* Tab 2: Security */}
                <TabPanel value={tabValue} index={2}>
-                  <Box sx={{ maxWidth: 600 }}>
-                     <Typography variant='h6' fontWeight='700' gutterBottom>
+                  <Box sx={{ maxWidth: 600, mx: 'auto' }}>
+                     <Typography variant='h6' fontWeight='700' gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
                         Security & Credentials
                      </Typography>
-                     <Typography variant='body2' color='text.secondary' mb={5}>
+                     <Typography variant='body2' color='text.secondary' mb={{ xs: 3, md: 5 }} sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
                         Secure your account by maintaining a strong password. We recommend changing it every 90 days.
                      </Typography>
 
                      <form onSubmit={handlePasswordSubmit}>
-                        <Stack spacing={4}>
+                        <Stack spacing={{ xs: 3, md: 4 }}>
                            <TextField
                               label='Current Access Password'
                               type='password'
@@ -463,7 +473,7 @@ export default function SettingsPage() {
                            />
 
                            <Divider>
-                              <Chip label="NEW CREDENTIALS" size="small" sx={{ fontSize: '10px', fontWeight: 700, bgcolor: '#F8FAFC' }} />
+                              <Chip label="NEW CREDENTIALS" size="small" sx={{ fontSize: '9px', fontWeight: 700, bgcolor: '#F8FAFC' }} />
                            </Divider>
 
                            <Stack spacing={3}>
@@ -489,6 +499,7 @@ export default function SettingsPage() {
                               type='submit'
                               variant='contained'
                               color='primary'
+                              fullWidth={isMobile}
                               disabled={changePassword.isPending}
                               sx={{ py: 2, mt: 2, borderRadius: '12px', fontSize: '16px', fontWeight: '700' }}>
                               {changePassword.isPending ? 'Updating...' : 'Update Credentials'}

@@ -168,9 +168,10 @@ export default function AdminLayout({
                ml: { sm: `${drawerWidth}px` },
                bgcolor: 'background.paper',
                color: 'text.primary',
-               boxShadow: 1,
+               boxShadow: '0 1px 3px rgba(15, 23, 42, 0.03)',
+               borderBottom: '1px solid #E3EEF7',
             }}>
-            <Toolbar>
+            <Toolbar sx={{ px: { xs: 2, sm: 4 } }}>
                <IconButton
                   color='inherit'
                   aria-label='open drawer'
@@ -181,12 +182,24 @@ export default function AdminLayout({
                </IconButton>
                <Box sx={{ flexGrow: 1 }} />
                <Button
-                  color='inherit'
+                  variant="outlined"
+                  size="small"
                   onClick={() => logout()}
                   disabled={isPending}
-                  startIcon={<LogOut />}>
+                  startIcon={<LogOut size={18} />}
+                  sx={{ 
+                     borderRadius: '8px',
+                     display: { xs: 'none', sm: 'flex' }
+                  }}>
                   Logout
-               </Button>{' '}
+               </Button>
+               <IconButton
+                  color="inherit"
+                  onClick={() => logout()}
+                  disabled={isPending}
+                  sx={{ display: { xs: 'flex', sm: 'none' } }}>
+                  <LogOut size={20} />
+               </IconButton>
             </Toolbar>
          </AppBar>
          <Box
@@ -226,8 +239,9 @@ export default function AdminLayout({
             component='main'
             sx={{
                flexGrow: 1,
-               p: 3,
+               p: { xs: 2, sm: 3, md: 4 },
                width: { sm: `calc(100% - ${drawerWidth}px)` },
+               minHeight: '100vh',
             }}>
             <Toolbar />
             {children}

@@ -3,9 +3,7 @@
 import React, { useState } from 'react';
 import {
    Box,
-   Backdrop,
    Typography,
-   Paper,
    Table,
    TableBody,
    TableCell,
@@ -23,6 +21,8 @@ import {
    Card,
    Stack,
    Button,
+   useTheme,
+   useMediaQuery,
 } from '@mui/material';
 import {
    Search,
@@ -36,9 +36,13 @@ import {
 import { usePatientsList } from '@/hooks/api/usePatients';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import BackDropLoading from '@/container/BackdropLoader';
 
 export default function PatientListPage() {
    const router = useRouter();
+   const theme = useTheme(); // Added
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Added
+   const isTablet = useMediaQuery(theme.breakpoints.down('md')); // Added
    const [isNavigating, startNavigation] = React.useTransition();
    const [page, setPage] = useState(0);
    const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -78,22 +82,25 @@ export default function PatientListPage() {
 
    return (
       <Box maxWidth='xl' mx='auto'>
-         <Backdrop
-            open={isNavigating}
-            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2000 }}>
-            <CircularProgress color='inherit' />
-         </Backdrop>
-         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Box>
-               <Typography variant='h4' fontWeight='800' color="primary" gutterBottom>
+         <BackDropLoading isLoading={isNavigating} />
+
+         <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+            <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
+               <Typography variant='h4' fontWeight='800' color="primary" gutterBottom sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                   Patient Directory
                </Typography>
-               <Typography variant='body1' color='text.secondary'>
+               <Typography variant='body1' color='text.secondary' sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                   Manage and view all registered patients in the system.
                </Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Box sx={{ 
+               display: 'flex', 
+               gap: { xs: 1.5, sm: 2 }, 
+               alignItems: 'center',
+               width: { xs: '100%', md: 'auto' },
+               flexWrap: { xs: 'wrap', sm: 'nowrap' }
+            }}>
                <TextField
                   placeholder="Search patients..."
                   size="small"
@@ -107,52 +114,62 @@ export default function PatientListPage() {
                      ),
                      sx: {
                         borderRadius: '12px',
-                        width: '300px',
+                        width: { xs: '100%', sm: '250px', md: '300px' },
                         bgcolor: 'white',
                         '& fieldset': { borderColor: '#E3EEF7' }
                      }
                   }}
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
                />
-               <IconButton sx={{ bgcolor: 'white', border: '1px solid #E3EEF7', borderRadius: '12px', p: 1 }}>
-                  <Filter size={20} color="#64748B" />
-               </IconButton>
-               <Button
-                  variant='contained'
-                  startIcon={<PlusCircle size={18} />}
-                  onClick={() => handleNavigate('/dashboard/patients/new')}
-                  disabled={isNavigating}
-                  sx={{ borderRadius: '12px', height: 48, px: 3 }}
-               >
-                  New Patient
-               </Button>
+               <Stack direction="row" spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' }, justifyContent: 'flex-end' }}>
+                  <IconButton sx={{ bgcolor: 'white', border: '1px solid #E3EEF7', borderRadius: '12px', p: 1 }}>
+                     <Filter size={20} color="#64748B" />
+                  </IconButton>
+                  <Button
+                     variant='contained'
+                     fullWidth
+                     startIcon={<PlusCircle size={18} />}
+                     onClick={() => handleNavigate('/dashboard/patients/new')}
+                     disabled={isNavigating}
+                     sx={{ borderRadius: '12px', height: 48, px: 3, whiteSpace: 'nowrap' }}
+                  >
+                     New Patient
+                  </Button>
+               </Stack>
             </Box>
          </Box>
 
-         <Card sx={{ borderRadius: '24px', boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
+         <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 'calc(100vh - 300px)' }}>
                <Table stickyHeader aria-label="patient list table">
                   <TableHead>
                      <TableRow>
-                        <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }}>
+                        <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B', py: { xs: 1.5, sm: 2 } }}>
                            <TableSortLabel
                               active={orderBy === 'name'}
                               direction={orderBy === 'name' ? order : 'asc'}
                               onClick={() => handleRequestSort('name')}>
-                              PATIENT NAME
+                              PATIENT
                            </TableSortLabel>
                         </TableCell>
-                        <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }}>
-                           CONTACT
-                        </TableCell>
-                        <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }}>
-                           GENDER / AGE
-                        </TableCell>
+                        {!isMobile && (
+                           <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }}>
+                              CONTACT
+                           </TableCell>
+                        )}
+                        {!isTablet && (
+                           <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }}>
+                              AGE / GENDER
+                           </TableCell>
+                        )}
                         <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }} align="center">
                            VISITS
                         </TableCell>
-                        <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }}>
-                           LAST VISIT
-                        </TableCell>
+                        {!isMobile && (
+                           <TableCell sx={{ bgcolor: '#F8FAFC', fontWeight: '700', color: '#64748B' }}>
+                              LAST VISIT
+                           </TableCell>
+                        )}
                         <TableCell sx={{ bgcolor: '#F8FAFC' }} />
                      </TableRow>
                   </TableHead>
@@ -173,44 +190,62 @@ export default function PatientListPage() {
                               sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
                            >
                               <TableCell>
-                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                    <Avatar sx={{ bgcolor: '#F1F5F9', color: '#2F5FA5', fontWeight: 'bold' }}>
+                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 } }}>
+                                    <Avatar 
+                                       sx={{ 
+                                          bgcolor: '#F1F5F9', 
+                                          color: '#2F5FA5', 
+                                          fontWeight: 'bold',
+                                          width: { xs: 32, sm: 40 },
+                                          height: { xs: 32, sm: 40 },
+                                          fontSize: { xs: '0.9rem', sm: '1rem' }
+                                       }}>
                                        {row.name.charAt(0).toUpperCase()}
                                     </Avatar>
                                     <Box>
-                                       <Typography variant='subtitle2' fontWeight='700' color="#0F172A">
+                                       <Typography variant='subtitle2' fontWeight='700' color="#0F172A" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
                                           {row.name}
                                        </Typography>
-                                       {row.address && (
-                                          <Typography variant='caption' color='text.secondary' display='flex' alignItems="center" gap={0.5}>
+                                       {row.phone && isMobile && (
+                                          <Typography variant='caption' color='text.secondary'>
+                                             {row.phone}
+                                          </Typography>
+                                       )}
+                                       {row.address && !isMobile && (
+                                          <Typography variant='caption' color='text.secondary' display='flex' alignItems="center" gap={0.5} noWrap sx={{ maxWidth: { sm: 150, md: 250 } }}>
                                              <MapPin size={10} /> {row.address}
                                           </Typography>
                                        )}
                                     </Box>
                                  </Box>
                               </TableCell>
-                              <TableCell>
-                                 <Typography variant="body2" color="textPrimary" fontWeight="500">
-                                    {row.phone}
-                                 </Typography>
-                              </TableCell>
-                              <TableCell>
-                                 <Stack direction="row" spacing={1} alignItems="center">
-                                    <Chip
-                                       label={row.gender}
-                                       size="small"
-                                       sx={{
-                                          fontSize: '11px',
-                                          fontWeight: '600',
-                                          bgcolor: row.gender === 'Male' ? '#E0F2FE' : '#FCE7F3',
-                                          color: row.gender === 'Male' ? '#0369A1' : '#BE185D'
-                                       }}
-                                    />
-                                    <Typography variant="body2" color="textSecondary">
-                                       {row.age} Yrs
+                              {!isMobile && (
+                                 <TableCell>
+                                    <Typography variant="body2" color="textPrimary" fontWeight="500">
+                                       {row.phone}
                                     </Typography>
-                                 </Stack>
-                              </TableCell>
+                                 </TableCell>
+                              )}
+                              {!isTablet && (
+                                 <TableCell>
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                       <Chip
+                                          label={row.gender}
+                                          size="small"
+                                          sx={{
+                                             fontSize: '10px',
+                                             fontWeight: '700',
+                                             height: 18,
+                                             bgcolor: row.gender === 'Male' ? '#E0F2FE' : '#FCE7F3',
+                                             color: row.gender === 'Male' ? '#0369A1' : '#BE185D'
+                                          }}
+                                       />
+                                       <Typography variant="body2" color="textSecondary">
+                                          {row.age} Y
+                                       </Typography>
+                                    </Stack>
+                                 </TableCell>
+                              )}
 
                               <TableCell align="center">
                                  <Chip
@@ -218,23 +253,24 @@ export default function PatientListPage() {
                                     size='small'
                                     sx={{
                                        fontWeight: 'bold',
-                                       minWidth: '32px',
+                                       minWidth: '28px',
+                                       height: 20,
+                                       fontSize: '11px',
                                        bgcolor: row.visit_count > 5 ? '#FEF3C7' : '#DCFCE7',
                                        color: row.visit_count > 5 ? '#92400E' : '#166534'
                                     }}
                                  />
                               </TableCell>
-                              <TableCell>
-                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Calendar size={14} color="#64748B" />
-                                    <Typography variant="body2" color="textPrimary">
-                                       {row.last_visit_date ? format(new Date(row.last_visit_date), 'dd MMM yyyy') : 'N/A'}
-                                    </Typography>
-                                 </Box>
-                                 <Typography variant="caption" color="textSecondary" sx={{ ml: 2.7 }}>
-                                    {row.last_visit_date ? format(new Date(row.last_visit_date), 'hh:mm a') : ''}
-                                 </Typography>
-                              </TableCell>
+                              {!isMobile && (
+                                 <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                       <Calendar size={14} color="#64748B" />
+                                       <Typography variant="body2" color="textPrimary">
+                                          {row.last_visit_date ? format(new Date(row.last_visit_date), 'dd MMM yyyy') : 'N/A'}
+                                       </Typography>
+                                    </Box>
+                                 </TableCell>
+                              )}
                               <TableCell align="right">
                                  <IconButton size="small">
                                     <ChevronRight size={18} color="#94A3B8" />

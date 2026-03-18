@@ -3,7 +3,6 @@
 import React from 'react';
 import {
    Box,
-   Backdrop,
    Drawer,
    List,
    ListItem,
@@ -20,26 +19,22 @@ import {
    Select,
    MenuItem,
    FormControl,
-   CircularProgress,
 } from '@mui/material';
 import {
    LayoutDashboard,
    Users,
-   Calendar,
-   FileText,
-   Receipt,
-   BarChart3,
    Settings,
    LogOut,
    Menu as MenuIcon,
    Search,
    Bell,
-   Plus,
    ChevronDown,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
+import BackDropLoading from '@/container/BackdropLoader';
+import UserProfile from '@/container/UserProfile';
 
 const drawerWidth = 260;
 
@@ -194,11 +189,7 @@ export default function DashboardLayout({
 
    return (
       <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F6FAFF' }}>
-         <Backdrop
-            open={isNavigating}
-            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2000 }}>
-            <CircularProgress color='inherit' />
-         </Backdrop>
+         <BackDropLoading isLoading={isNavigating} />
          <AppBar
             position='fixed'
             sx={{
@@ -209,13 +200,13 @@ export default function DashboardLayout({
                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.03)',
                borderBottom: '1px solid #E3EEF7',
             }}>
-            <Toolbar sx={{ px: { xs: 2, sm: 4 }, gap: 2 }}>
+            <Toolbar sx={{ px: { xs: 1, sm: 4 }, gap: { xs: 1, sm: 2 } }}>
                <IconButton
                   color='inherit'
                   aria-label='open drawer'
                   edge='start'
                   onClick={handleDrawerToggle}
-                  sx={{ mr: 2, display: { sm: 'none' } }}>
+                  sx={{ mr: { xs: 0, sm: 2 }, display: { sm: 'none' } }}>
                   <MenuIcon />
                </IconButton>
 
@@ -226,57 +217,35 @@ export default function DashboardLayout({
                   px: 2,
                   py: 0.5,
                   borderRadius: '10px',
-                  width: 300,
-                  border: '1px solid #E3EEF7'
+                  width: { md: 200, lg: 300 },
+                  border: '1px solid #E3EEF7',
+                  transition: 'width 0.3s'
                }}>
                   <Search size={18} color="#64748B" />
                   <InputBase
-                     placeholder="Search patients, appointments..."
+                     placeholder="Search..."
                      sx={{ ml: 1, flex: 1, fontSize: '14px' }}
                   />
                </Box>
 
+               <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                  <IconButton sx={{ color: '#64748B' }}>
+                     <Search size={20} />
+                  </IconButton>
+               </Box>
+
                <Box sx={{ flexGrow: 1 }} />
 
-               <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 3 } }}>
-                  <FormControl size="small" variant="standard" sx={{ display: { xs: 'none', lg: 'block' }, minWidth: 150 }}>
-                     <Select
-                        value={clinic}
-                        onChange={(e) => setClinic(e.target.value)}
-                        disableUnderline
-                        sx={{
-                           fontSize: '14px',
-                           fontWeight: 600,
-                           '& .MuiSelect-select': { py: 0.5, display: 'flex', alignItems: 'center', gap: 1 }
-                        }}
-                        IconComponent={ChevronDown}
-                     >
-                        <MenuItem value="main-clinic">Main Clinic</MenuItem>
-                        <MenuItem value="branch-a">North Wing Branch</MenuItem>
-                        <MenuItem value="branch-b">City Center Clinic</MenuItem>
-                     </Select>
-                  </FormControl>
-
-                  <IconButton sx={{ bgcolor: '#F6FAFF', border: '1px solid #E3EEF7', borderRadius: '10px' }}>
+               <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 2 } }}>
+                  <IconButton sx={{
+                     bgcolor: { xs: 'transparent', sm: '#F6FAFF' },
+                     border: { xs: 'none', sm: '1px solid #E3EEF7' },
+                     borderRadius: '10px'
+                  }}>
                      <Bell size={20} color="#64748B" />
                   </IconButton>
-
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pl: 2, borderLeft: '1px solid #E3EEF7' }}>
-                     <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
-                        <Typography variant="body2" fontWeight="600">Dr. Omkary</Typography>
-                        <Typography variant="caption" color="textSecondary">Administrator</Typography>
-                     </Box>
-                     <Avatar
-                        src="/avatar.png"
-                        sx={{
-                           width: 40,
-                           height: 40,
-                           borderRadius: '10px',
-                           cursor: 'pointer',
-                           border: '2px solid #E3EEF7'
-                        }}
-                     />
-                  </Box>
+                  
+                  <UserProfile />
                </Box>
             </Toolbar>
          </AppBar>

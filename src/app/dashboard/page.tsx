@@ -11,6 +11,8 @@ import {
    Stack,
    Card,
    Chip,
+   useTheme,
+   useMediaQuery,
 } from '@mui/material';
 import {
    TrendingUp,
@@ -49,6 +51,10 @@ import 'react-date-range/dist/theme/default.css';
 const formatCurrency = (value: number) => `₹${value.toLocaleString()}`;
 
 export default function DashboardPage() {
+   const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+
    const [dateRange, setDateRange] = useState({
       startDate: startOfMonth(new Date()),
       endDate: endOfMonth(new Date()),
@@ -71,6 +77,7 @@ export default function DashboardPage() {
 
    const handleRangeChange = (ranges: RangeKeyDict) => {
       setDateRange(ranges.selection as any);
+      if (isMobile) handlePopoverClose();
    };
 
    const open = Boolean(anchorEl);
@@ -181,25 +188,27 @@ export default function DashboardPage() {
 
    return (
       <Box maxWidth="xl" mx="auto">
-         <Box display="flex" justifyContent="space-between" alignItems="center" mb={5} flexWrap="wrap" gap={2}>
-            <Box>
-               <Typography variant='h4' fontWeight='800' color="primary" gutterBottom>
+         <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={{ xs: 3, md: 5 }} flexWrap="wrap" gap={3}>
+            <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
+               <Typography variant='h4' fontWeight='800' color="primary" gutterBottom sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                   Clinic Insights
                </Typography>
-               <Typography variant='body1' color='text.secondary'>
+               <Typography variant='body1' color='text.secondary' sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                   Real-time monitoring of your clinic&apos;s performance and patient growth.
                </Typography>
             </Box>
 
-            <Stack direction="row" spacing={2} alignItems="center">
+            <Stack direction={{ xs: 'column', sm: 'row' }}
+               spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }} sx={{ width: { xs: '100%', md: 'auto' } }}>
                <Button
                   variant='outlined'
+                  fullWidth
                   startIcon={<Calendar size={18} />}
                   endIcon={<ChevronDown size={14} />}
                   onClick={handlePopoverOpen}
                   sx={{
                      borderRadius: '12px',
-                     px: 2.5,
+                     px: 3,
                      height: 48,
                      bgcolor: 'white',
                      borderColor: '#E3EEF7',
@@ -213,53 +222,77 @@ export default function DashboardPage() {
                   open={open}
                   anchorEl={anchorEl}
                   onClose={handlePopoverClose}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                  PaperProps={{ sx: { borderRadius: '16px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', mt: 1, border: '1px solid #E3EEF7' } }}
+                  anchorOrigin={{
+                     vertical: 'bottom',
+                     horizontal: isMobile ? 'center' : 'right'
+                  }}
+                  transformOrigin={{
+                     vertical: 'top',
+                     horizontal: isMobile ? 'center' : 'right'
+                  }}
+                  PaperProps={{
+                     sx: {
+                        borderRadius: '16px',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                        mt: 1,
+                        border: '1px solid #E3EEF7',
+                        maxWidth: '95vw',
+                        overflowX: 'auto'
+                     }
+                  }}
                >
-                  <Box p={1}>
+                  <Box p={isMobile ? 0 : 1}>
                      <DateRangePicker
                         ranges={[dateRange]}
                         onChange={handleRangeChange}
                         moveRangeOnFirstSelection={false}
                         rangeColors={['#2F5FA5']}
+                        months={isMobile ? 1 : 2}
+                        direction={isMobile ? 'vertical' : 'horizontal'}
+                        staticRanges={[]}
+                        inputRanges={[]}
                      />
                   </Box>
                </Popover>
-               <Button
-                  variant="outlined"
-                  onClick={() => setDateRange({
-                     startDate: startOfToday(),
-                     endDate: endOfToday(),
-                     key: 'selection'
-                  })}
-                  sx={{ borderRadius: '12px', height: 48, px: 3, borderColor: '#E3EEF7', color: '#475569' }}
-               >
-                  Today
-               </Button>
 
-               <Button
-                  variant='contained'
-                  startIcon={<Download size={18} />}
-                  onClick={() => {
-                     const start = dateRange.startDate.toISOString();
-                     const end = dateRange.endDate.toISOString();
-                     window.open(`${process.env.NEXT_PUBLIC_API_URL}/export/bills?format=xlsx&start_date=${start}&end_date=${end}`, '_blank');
-                  }}
-                  sx={{ borderRadius: '12px', height: 48, px: 3 }}
-               >
-                  Export Reports
-               </Button>
+               <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
+                  <Button
+                     variant="outlined"
+                     fullWidth
+                     onClick={() => setDateRange({
+                        startDate: startOfToday(),
+                        endDate: endOfToday(),
+                        key: 'selection'
+                     })}
+                     sx={{ borderRadius: '12px', height: 48, px: 3, borderColor: '#E3EEF7', color: '#475569' }}
+                  >
+                     Today
+                  </Button>
+
+                  <Button
+                     variant='contained'
+                     fullWidth
+                     startIcon={<Download size={18} />}
+                     onClick={() => {
+                        const start = dateRange.startDate.toISOString();
+                        const end = dateRange.endDate.toISOString();
+                        window.open(`${process.env.NEXT_PUBLIC_API_URL}/export/bills?format=xlsx&start_date=${start}&end_date=${end}`, '_blank');
+                     }}
+                     sx={{ borderRadius: '12px', height: 48, px: 3, whiteSpace: 'nowrap' }}
+                  >
+                     Export
+                  </Button>
+               </Stack>
             </Stack>
          </Box>
 
-         <Grid container spacing={1} mb={5}>
+         <Grid container spacing={{ xs: 2, md: 3, lg: 1 }} mb={5}>
             {stats.map((stat, i) => (
                <Grid item xs={12} sm={6} md={4} lg={2.4} key={i}>
                   <Card
                      elevation={0}
                      sx={{
-                        p: 3,
+                        p: { xs: 2, md: 3 },
                         borderRadius: '24px',
                         border: '1px solid #E3EEF7',
                         background: 'white',
@@ -268,14 +301,14 @@ export default function DashboardPage() {
                         '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 12px 30px rgba(15, 23, 42, 0.06)' }
                      }}>
                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Box sx={{ bgcolor: stat.bgcolor, color: stat.color, p: 2, borderRadius: '16px', display: 'flex' }}>
+                        <Box sx={{ bgcolor: stat.bgcolor, color: stat.color, p: { xs: 1.5, md: 2 }, borderRadius: '16px', display: 'flex' }}>
                            {stat.icon}
                         </Box>
                         <Box>
-                           <Typography variant='caption' color='text.secondary' fontWeight='700' sx={{ letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                           <Typography variant='caption' color='text.secondary' fontWeight='700' sx={{ letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: { xs: '0.65rem', md: '0.75rem' } }}>
                               {stat.title}
                            </Typography>
-                           <Typography variant='h5' fontWeight='800' color="#0F172A" sx={{ mt: 0.2 }}>
+                           <Typography variant='h5' fontWeight='800' color="#0F172A" sx={{ mt: 0.2, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
                               {stat.value}
                            </Typography>
                         </Box>
@@ -291,21 +324,21 @@ export default function DashboardPage() {
             ))}
          </Grid>
 
-         <Grid container spacing={4}>
-            <Grid item xs={12} md={8}>
+         <Grid container spacing={{ xs: 2, md: 4 }}>
+            <Grid item xs={12} lg={8}>
                <Card
                   elevation={0}
                   sx={{
-                     p: 4,
+                     p: { xs: 2, md: 4 },
                      borderRadius: '24px',
                      border: '1px solid #E3EEF7',
-                     height: 500,
+                     height: { xs: 400, md: 500 },
                   }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                      <Typography variant='h6' fontWeight='800' color="#0F172A">
                         Revenue Intelligence
                      </Typography>
-                     <Chip label="Daily View" size="small" sx={{ fontWeight: 700, bgcolor: '#F1F5F9' }} />
+                     <Chip label="Daily" size="small" sx={{ fontWeight: 700, bgcolor: '#F1F5F9' }} />
                   </Box>
                   <ResponsiveContainer width='100%' height='85%'>
                      <AreaChart data={dailyRevenueData}>
@@ -320,14 +353,15 @@ export default function DashboardPage() {
                            dataKey='day'
                            axisLine={false}
                            tickLine={false}
-                           tick={{ fontSize: 12, fill: '#64748B', fontWeight: 500 }}
+                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
                            tickFormatter={(val) => format(new Date(val), 'MMM dd')}
                            dy={10}
+                           minTickGap={30}
                         />
                         <YAxis
                            axisLine={false}
                            tickLine={false}
-                           tick={{ fontSize: 12, fill: '#64748B', fontWeight: 500 }}
+                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
                            tickFormatter={(value) => `₹${value}`}
                         />
                         <Tooltip
@@ -347,14 +381,14 @@ export default function DashboardPage() {
                </Card>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={6} lg={4}>
                <Card
                   elevation={0}
                   sx={{
-                     p: 4,
+                     p: { xs: 2, md: 4 },
                      borderRadius: '24px',
                      border: '1px solid #E3EEF7',
-                     height: 500,
+                     height: { xs: 400, md: 500 },
                      display: 'flex',
                      flexDirection: 'column'
                   }}>
@@ -365,8 +399,8 @@ export default function DashboardPage() {
                      <PieChart>
                         <Pie
                            data={pieData}
-                           innerRadius={70}
-                           outerRadius={100}
+                           innerRadius="60%"
+                           outerRadius="80%"
                            paddingAngle={8}
                            dataKey="value"
                         >
@@ -375,7 +409,7 @@ export default function DashboardPage() {
                            ))}
                         </Pie>
                         <Tooltip />
-                        <Legend verticalAlign="bottom" iconType="circle" />
+                        <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
                      </PieChart>
                   </ResponsiveContainer>
                </Card>
@@ -385,16 +419,16 @@ export default function DashboardPage() {
                <Card
                   elevation={0}
                   sx={{
-                     p: 4,
+                     p: { xs: 2, md: 4 },
                      borderRadius: '24px',
                      border: '1px solid #E3EEF7',
-                     height: 450,
+                     height: { xs: 400, md: 450 },
                   }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                      <Typography variant='h6' fontWeight='800' color="#0F172A">
                         Age Distribution
                      </Typography>
-                     <Chip label="Patient Demographics" size="small" sx={{ fontWeight: 700, bgcolor: '#F1F5F9' }} />
+                     <Chip label="Demographics" size="small" sx={{ fontWeight: 700, bgcolor: '#F1F5F9' }} />
                   </Box>
                   <ResponsiveContainer width='100%' height='85%'>
                      <BarChart data={ageData.length > 0 ? ageData : [{ range: 'N/A', count: 0 }]}>
@@ -403,13 +437,13 @@ export default function DashboardPage() {
                            dataKey="range"
                            axisLine={false}
                            tickLine={false}
-                           tick={{ fontSize: 12, fill: '#64748B', fontWeight: 500 }}
+                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
                            dy={10}
                         />
                         <YAxis
                            axisLine={false}
                            tickLine={false}
-                           tick={{ fontSize: 12, fill: '#64748B', fontWeight: 500 }}
+                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
                         />
                         <Tooltip
                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '12px' }}
@@ -418,7 +452,7 @@ export default function DashboardPage() {
                            dataKey="count"
                            fill="#5CC6C4"
                            radius={[6, 6, 0, 0]}
-                           barSize={30}
+                           barSize={20}
                         />
                      </BarChart>
                   </ResponsiveContainer>
@@ -429,10 +463,10 @@ export default function DashboardPage() {
                <Card
                   elevation={0}
                   sx={{
-                     p: 4,
+                     p: { xs: 2, md: 4 },
                      borderRadius: '24px',
                      border: '1px solid #E3EEF7',
-                     height: 450,
+                     height: { xs: 400, md: 450 },
                      display: 'flex',
                      flexDirection: 'column'
                   }}>
@@ -443,8 +477,8 @@ export default function DashboardPage() {
                      <PieChart>
                         <Pie
                            data={genderData}
-                           innerRadius={70}
-                           outerRadius={100}
+                           innerRadius="60%"
+                           outerRadius="80%"
                            paddingAngle={8}
                            dataKey="value"
                         >
@@ -455,7 +489,7 @@ export default function DashboardPage() {
                         <Tooltip
                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '12px' }}
                         />
-                        <Legend verticalAlign="bottom" iconType="circle" />
+                        <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
                      </PieChart>
                   </ResponsiveContainer>
                </Card>
@@ -465,16 +499,16 @@ export default function DashboardPage() {
                <Card
                   elevation={0}
                   sx={{
-                     p: 4,
+                     p: { xs: 2, md: 4 },
                      borderRadius: '24px',
                      border: '1px solid #E3EEF7',
-                     height: 450,
+                     height: { xs: 400, md: 450 },
                   }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                      <Typography variant='h6' fontWeight='800' color="#0F172A">
                         Growth Trajectory (Monthly)
                      </Typography>
-                     <Stack direction="row" spacing={1}>
+                     <Stack direction="row" spacing={1} display={{ xs: 'none', sm: 'flex' }}>
                         <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#5CC6C4', alignSelf: 'center' }} />
                         <Typography variant="caption" fontWeight="700" color="textSecondary">Trend Line</Typography>
                      </Stack>
@@ -486,13 +520,14 @@ export default function DashboardPage() {
                            dataKey='monthLabel'
                            axisLine={false}
                            tickLine={false}
-                           tick={{ fontSize: 12, fill: '#64748B', fontWeight: 500 }}
+                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
                            dy={10}
+                           minTickGap={20}
                         />
                         <YAxis
                            axisLine={false}
                            tickLine={false}
-                           tick={{ fontSize: 12, fill: '#64748B', fontWeight: 500 }}
+                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
                            tickFormatter={(value) => `₹${value}`}
                         />
                         <Tooltip
@@ -503,8 +538,8 @@ export default function DashboardPage() {
                            dataKey="revenue"
                            stroke="#5CC6C4"
                            strokeWidth={4}
-                           dot={{ r: 6, fill: '#5CC6C4', strokeWidth: 2, stroke: 'white' }}
-                           activeDot={{ r: 8, strokeWidth: 0 }}
+                           dot={{ r: 4, fill: '#5CC6C4', strokeWidth: 2, stroke: 'white' }}
+                           activeDot={{ r: 6, strokeWidth: 0 }}
                         />
                      </LineChart>
                   </ResponsiveContainer>

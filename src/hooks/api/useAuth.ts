@@ -14,10 +14,11 @@ export const useAuthMutation = () => {
                 email: credentials.email,
                 password: credentials.password
             });
+            console.log("Login Response", response);
             return response.data;
         },
         onSuccess: (data: any) => {
-            console.log(data)
+            console.log("Login Response Success data", data);
             setAuth(data.access_token, data.role);
             toast.success('Login successful');
             if (data.role === 'admin') {
@@ -27,6 +28,7 @@ export const useAuthMutation = () => {
             }
         },
         onError: (error: any) => {
+             console.log("Login Error", error);
             toast.error(error?.response?.data?.detail || 'Login failed. Please check credentials.');
         },
     });

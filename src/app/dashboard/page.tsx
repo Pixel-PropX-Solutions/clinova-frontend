@@ -45,8 +45,8 @@ import {
 } from 'recharts';
 import { DateRangePicker, RangeKeyDict } from 'react-date-range';
 import { format, startOfMonth, endOfMonth, startOfToday, endOfToday } from 'date-fns';
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
 
 const formatCurrency = (value: number) => `₹${value.toLocaleString()}`;
 
@@ -77,7 +77,7 @@ export default function DashboardPage() {
 
    const handleRangeChange = (ranges: RangeKeyDict) => {
       setDateRange(ranges.selection as any);
-      if (isMobile) handlePopoverClose();
+      handlePopoverClose();
    };
 
    const open = Boolean(anchorEl);
@@ -247,10 +247,9 @@ export default function DashboardPage() {
                         onChange={handleRangeChange}
                         moveRangeOnFirstSelection={false}
                         rangeColors={['#2F5FA5']}
+                        showPreview={false}
                         months={isMobile ? 1 : 2}
                         direction={isMobile ? 'vertical' : 'horizontal'}
-                        staticRanges={[]}
-                        inputRanges={[]}
                      />
                   </Box>
                </Popover>

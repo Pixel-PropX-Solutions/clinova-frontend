@@ -115,6 +115,12 @@ export default function SettingsPage() {
    }, [recalculatePreviewScale, previewTemplate]);
 
    useEffect(() => {
+      if (tabValue === 1) {
+         recalculatePreviewScale();
+      }
+   }, [tabValue, recalculatePreviewScale]);
+
+   useEffect(() => {
       const container = previewContainerRef.current;
       if (!container) return;
 
@@ -320,7 +326,7 @@ export default function SettingsPage() {
                         </Box>
                      </Grid>
 
-                     <Grid item xs={12} md={8}>
+                     <Grid item xs={12} md={8} sx={{ minWidth: 0 }}>
                         <form onSubmit={handleProfileSubmit}>
                            <Stack spacing={{ xs: 3, md: 4 }}>
                               <Typography variant="subtitle2" color="primary" fontWeight="700" sx={{ letterSpacing: '1px', textTransform: 'uppercase', fontSize: { xs: '0.7rem', md: '0.75rem' } }}>
@@ -504,10 +510,8 @@ export default function SettingsPage() {
                                  isMobile ? (
                                     <Box
                                        sx={{
-                                          width: scaledPreviewWidth,
-                                          height: scaledPreviewHeight,
-                                          maxWidth: '100%',
-                                          maxHeight: '100%',
+                                          width: `min(100%, ${scaledPreviewWidth}px)`,
+                                          height: `min(100%, ${scaledPreviewHeight}px)`,
                                           position: 'relative',
                                           overflow: 'hidden',
                                        }}>

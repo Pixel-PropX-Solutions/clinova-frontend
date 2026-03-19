@@ -6,6 +6,7 @@ export const useTemplates = () => {
         queryKey: ['templates'],
         queryFn: async () => {
             const { data } = await apiClient.get('/templates/');
+            console.log("Users Templates list", data);
             return data;
         },
     });

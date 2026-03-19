@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
    Box,
    Button,
@@ -30,22 +30,18 @@ import {
    Stack,
    Card,
    Chip,
-   Tooltip as MuiTooltip,
    Grid,
    useTheme,
    useMediaQuery,
 } from '@mui/material';
-import { 
-   Plus, 
-   Trash2, 
-   Edit3, 
-   FileText, 
-   Globe, 
-   Building2, 
-   Eye, 
-   Code, 
-   CheckCircle2,
-   ChevronLeft,
+import {
+   Plus,
+   Trash2,
+   Edit3,
+   FileText,
+   Globe,
+   Eye,
+   Code,
 } from 'lucide-react';
 import { useClinics } from '@/hooks/api/useClinics';
 import {
@@ -65,6 +61,12 @@ export default function AdminTemplatesPage() {
    const createTemplate = useCreateAdminTemplate();
    const updateTemplate = useUpdateAdminTemplate();
    const deleteTemplate = useDeleteAdminTemplate();
+
+   const previewContainerRef = useRef<HTMLDivElement | null>(null);
+   const [previewFrameSize, setPreviewFrameSize] = useState({ width: 1024, height: 1320 });
+   const [previewScale, setPreviewScale] = useState(1);
+   const scaledPreviewWidth = previewFrameSize.width * previewScale;
+   const scaledPreviewHeight = previewFrameSize.height * previewScale;
 
    const [open, setOpen] = useState(false);
    const [editingId, setEditingId] = useState<string | null>(null);
@@ -135,6 +137,60 @@ export default function AdminTemplatesPage() {
       return clinic ? clinic.name : 'Unknown Clinic';
    };
 
+   const recalculatePreviewScale = useCallback(() => {
+      const container = previewContainerRef.current;
+      if (!container) return;
+
+      const widthScale = container.clientWidth / previewFrameSize.width;
+      const heightScale = container.clientHeight / previewFrameSize.height;
+      const nextScale = Math.min(1, widthScale, heightScale);
+
+      if (Number.isFinite(nextScale) && nextScale > 0) {
+         setPreviewScale(nextScale);
+      }
+   }, [previewFrameSize.height, previewFrameSize.width]);
+
+   useEffect(() => {
+      recalculatePreviewScale();
+   }, [recalculatePreviewScale]);
+
+   useEffect(() => {
+      const container = previewContainerRef.current;
+      if (!container) return;
+
+      const observer = new ResizeObserver(() => {
+         recalculatePreviewScale();
+      });
+
+      observer.observe(container);
+      return () => observer.disconnect();
+   }, [recalculatePreviewScale]);
+
+   const handlePreviewLoad = (event: React.SyntheticEvent<HTMLIFrameElement>) => {
+      const iframe = event.currentTarget;
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+
+      const root = doc.documentElement;
+      const body = doc.body;
+
+      const contentWidth = Math.max(
+         root?.scrollWidth || 0,
+         root?.offsetWidth || 0,
+         body?.scrollWidth || 0,
+         body?.offsetWidth || 0,
+      );
+      const contentHeight = Math.max(
+         root?.scrollHeight || 0,
+         root?.offsetHeight || 0,
+         body?.scrollHeight || 0,
+         body?.offsetHeight || 0,
+      );
+
+      if (contentWidth > 0 && contentHeight > 0) {
+         setPreviewFrameSize({ width: contentWidth, height: contentHeight });
+      }
+   };
    const isLoading = loadingClinics || loadingTemplates;
 
    return (
@@ -173,7 +229,7 @@ export default function AdminTemplatesPage() {
             <Box display="flex" justifyContent="center" py={10}>
                <CircularProgress thickness={4} />
             </Box>
-         :  <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
+            : <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden', border: '1px solid #E3EEF7' }}>
                <TableContainer>
                   <Table>
                      <TableHead sx={{ bgcolor: '#F8FAFC' }}>
@@ -182,7 +238,7 @@ export default function AdminTemplatesPage() {
                            {!isMobile && <TableCell sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>DOCUMENT TYPE</TableCell>}
                            {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>SCOPE</TableCell>}
                            <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>ACTIONS</TableCell>
-                         </TableRow>
+                        </TableRow>
                      </TableHead>
                      <TableBody>
                         {Array.isArray(templates) && templates.length > 0 ?
@@ -247,7 +303,7 @@ export default function AdminTemplatesPage() {
                                  </TableCell>
                               </TableRow>
                            ))
-                        :  <TableRow>
+                           : <TableRow>
                               <TableCell colSpan={isTablet ? (isMobile ? 2 : 3) : 4} align='center' sx={{ py: 10 }}>
                                  <Box sx={{ opacity: 0.1, mb: 2 }}>
                                     <FileText size={isMobile ? 48 : 64} />
@@ -268,25 +324,25 @@ export default function AdminTemplatesPage() {
             open={open}
             onClose={handleClose}
             fullWidth
-            fullScreen={isMobile}
+            fullScreen={isTablet}
             maxWidth='md'
-            PaperProps={{ sx: { borderRadius: isMobile ? 0 : '24px', p: { xs: 0, sm: 1 } } }}>
-            <DialogTitle sx={{ 
-               display: 'flex', 
+            PaperProps={{ sx: { borderRadius: isTablet ? 0 : '24px', p: { xs: 0, sm: 1 } } }}>
+            <DialogTitle sx={{
+               display: 'flex',
                flexDirection: { xs: 'column', sm: 'row' },
-               justifyContent: 'space-between', 
-               alignItems: isMobile ? 'flex-start' : 'center',
+               justifyContent: 'space-between',
+               alignItems: isTablet ? 'flex-start' : 'center',
                gap: 2,
                pb: 1
             }}>
-               <Typography variant={isMobile ? "h6" : "h5"} fontWeight="800">
+               <Typography variant={isTablet ? "h6" : "h5"} fontWeight="800">
                   {editingId ? 'Refine Blueprint' : 'Architect New Blueprint'}
                </Typography>
                <Tabs
                   value={tabIndex}
                   onChange={(e, val) => setTabIndex(val)}
-                  variant={isMobile ? "fullWidth" : "standard"}
-                  sx={{ 
+                  variant={isTablet ? "fullWidth" : "standard"}
+                  sx={{
                      'width': isMobile ? '100%' : 'auto',
                      '& .MuiTabs-indicator': { height: 3, borderRadius: '3px' },
                      '& .MuiTab-root': { fontWeight: 800, fontSize: '13px', minHeight: 48 }
@@ -370,13 +426,13 @@ export default function AdminTemplatesPage() {
                         value={formData.html_content}
                         onChange={handleChange}
                         helperText='Inject raw HTML/CSS for granular PDF layout control.'
-                        InputProps={{ 
-                           sx: { 
-                              borderRadius: '16px', 
-                              fontFamily: 'JetBrains Mono, monospace', 
+                        InputProps={{
+                           sx: {
+                              borderRadius: '16px',
+                              fontFamily: 'JetBrains Mono, monospace',
                               fontSize: '13px',
                               bgcolor: '#FBFCFE'
-                           } 
+                           }
                         }}
                      />
                   </Stack>
@@ -394,18 +450,74 @@ export default function AdminTemplatesPage() {
                            borderRadius: '20px',
                            border: '1px solid #E3EEF7',
                            minHeight: { xs: 300, sm: 500 },
+                           height: { xs: 400, sm: 560, md: 720, lg: 820 },
                            backgroundColor: '#fff',
                            boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.02)',
                            overflowX: 'auto'
                         }}>
-                        <div
-                           style={{ width: '100%', minWidth: isMobile ? '300px' : 'auto' }}
-                           dangerouslySetInnerHTML={{
-                              __html:
-                                 formData.html_content ||
-                                 '<div style="text-align: center; color: #94A3B8; padding-top: 100px;">No schematic data provided</div>',
-                           }}
-                        />
+                        <Box
+                           ref={previewContainerRef}
+                           sx={{
+                              flexGrow: 1,
+                              p: { xs: 1, sm: 3 },
+                              display: 'flex',
+                              height: '100%',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              bgcolor: '#E2E8F0',
+                              overflow: 'hidden',
+                           }}>
+
+                           {isTablet ? (
+                              <Box
+                                 sx={{
+                                    width: scaledPreviewWidth,
+                                    height: scaledPreviewHeight,
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                 }}>
+                                 <Paper
+                                    elevation={4}
+                                    sx={{
+                                       width: previewFrameSize.width,
+                                       height: previewFrameSize.height,
+                                       position: 'absolute',
+                                       top: 0,
+                                       left: '50%',
+                                       borderRadius: '8px',
+                                       overflow: 'scroll',
+                                       backgroundColor: 'white',
+                                       transform: `translateX(-50%) scale(${previewScale})`,
+                                       transformOrigin: 'top center',
+                                    }}>
+                                    <iframe
+                                       title={formData.template_name}
+                                       srcDoc={formData.html_content}
+                                       onLoad={handlePreviewLoad}
+                                       style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'white' }}
+                                    />
+                                 </Paper>
+                              </Box>
+                           ) : (
+                              <Paper
+                                 elevation={4}
+                                 sx={{
+                                    width: '100%',
+                                    height: '100%',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden',
+                                    backgroundColor: 'white',
+                                 }}>
+                                 <iframe
+                                    title={formData.template_name}
+                                    srcDoc={formData.html_content}
+                                    style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'white' }}
+                                 />
+                              </Paper>
+                           )}
+                        </Box>
                      </Paper>
                   </Box>
                )}
@@ -419,7 +531,7 @@ export default function AdminTemplatesPage() {
                   sx={{ borderRadius: '12px', px: 4, fontWeight: 700 }}>
                   {createTemplate.isPending || updateTemplate.isPending ?
                      <CircularProgress size={24} color="inherit" />
-                  :  'Commit Changes'}
+                     : 'Commit Changes'}
                </Button>
             </DialogActions>
          </Dialog>

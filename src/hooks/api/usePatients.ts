@@ -55,6 +55,7 @@ export const usePatientProfile = (patientId: string) => {
         queryFn: async () => {
             if (!patientId) return null;
             const res = await apiClient.get(`/patients/${patientId}/profile`);
+            console.log('Patients Data', res);
             return res.data;
         },
         enabled: !!patientId,

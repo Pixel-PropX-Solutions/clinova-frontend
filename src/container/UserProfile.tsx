@@ -9,6 +9,7 @@ const UserProfile = () => {
     const [profileState, setProfileState] = useState({
         name: '',
         image: '',
+        role:'',
     });
 
     useEffect(() => {
@@ -16,6 +17,7 @@ const UserProfile = () => {
             setProfileState({
                 name: clinic.name || '',
                 image: clinic.logo_url || '',
+                role: clinic.role || '',
             });
         }
     }, [clinic]);
@@ -33,7 +35,7 @@ const UserProfile = () => {
             borderLeft: '1px solid #E3EEF7'
         }}>
             <Box sx={{ textAlign: 'right', display: { xs: 'none', md: 'block' } }}>
-                <Typography variant="body2" fontWeight="600" sx={{ whiteSpace: 'nowrap' }}>Dr. {profileState.name}</Typography>
+                <Typography variant="body2" fontWeight="600" sx={{ whiteSpace: 'nowrap' }}>{profileState.role==='admin' ? 'Admin' : 'Dr. ' + profileState.name}</Typography>
             </Box>
             <Avatar
                 src={profileState.image}

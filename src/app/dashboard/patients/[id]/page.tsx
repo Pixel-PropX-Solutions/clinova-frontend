@@ -46,7 +46,7 @@ import {
 } from 'lucide-react';
 import { usePatientProfile } from '@/hooks/api/usePatients';
 import { useDeleteVisit } from '@/hooks/api/useVisits';
-import { generatePDF } from '@/hooks/api/usePDF';
+import { generateAndPrintPDF, generatePDF } from '@/hooks/api/usePDF';
 import { format } from 'date-fns';
 import { useClinicProfile } from '@/hooks/api/useSettings';
 import BackDropLoading from '@/container/BackdropLoader';
@@ -79,7 +79,8 @@ export default function PatientProfilePage() {
    };
 
    const handlePrintParchi = (visitId: string) => {
-      generatePDF(visitId, clinic?.default_template_id, `parchi_${visitId}.pdf`);
+      generateAndPrintPDF(visitId, clinic?.default_template_id);
+      // generatePDF(visitId, clinic?.default_template_id, `parchi_${visitId}.pdf`);
    };
 
    const handleNavigateBack = () => {
@@ -303,7 +304,7 @@ export default function PatientProfilePage() {
                      <TableBody>
                         {visits && visits.length > 0 ?
                            visits.map((visit: any, index: number) => (
-                              <TableRow key={visit.visit_id || index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                              <TableRow key={visit._id || index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                  <TableCell sx={{ fontWeight: 700, color: '#94A3B8' }}>{visits.length - index}</TableCell>
                                  <TableCell>
                                     <Typography variant="body2" fontWeight="700" color="#0F172A">
@@ -346,14 +347,14 @@ export default function PatientProfilePage() {
                                        <IconButton
                                           size='small'
                                           color='primary'
-                                          onClick={() => handlePrintParchi(visit.visit_id)}
+                                          onClick={() => handlePrintParchi(visit._id)}
                                           sx={{ bgcolor: '#F0F7FF', '&:hover': { bgcolor: '#E0F2FE' } }}>
                                           <Printer size={16} />
                                        </IconButton>
                                        <IconButton
                                           size='small'
                                           color='error'
-                                          onClick={() => handleDeleteClick(visit.visit_id)}
+                                          onClick={() => handleDeleteClick(visit._id)}
                                           sx={{ bgcolor: '#FEF2F2', '&:hover': { bgcolor: '#FEE2E2' } }}>
                                           <Trash2 size={16} />
                                        </IconButton>
@@ -379,7 +380,7 @@ export default function PatientProfilePage() {
             <Box>
                {visits && visits.length > 0 ? (
                   visits.map((visit: any, index: number) => (
-                     <Card key={visit.visit_id || index} sx={{
+                     <Card key={visit._id || index} sx={{
                         p: 2.5,
                         mb: 2,
                         borderRadius: '20px',
@@ -456,12 +457,12 @@ export default function PatientProfilePage() {
                               <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1.5 }}>
                                  <Stack direction="row" spacing={1.5}>
                                     <IconButton
-                                       onClick={() => handlePrintParchi(visit.visit_id)}
+                                       onClick={() => handlePrintParchi(visit._id)}
                                        sx={{ bgcolor: '#F0F7FF', color: 'primary.main', '&:hover': { bgcolor: '#E0F2FE' } }}>
                                        <Printer size={18} />
                                     </IconButton>
                                     <IconButton
-                                       onClick={() => handleDeleteClick(visit.visit_id)}
+                                       onClick={() => handleDeleteClick(visit._id)}
                                        sx={{ bgcolor: '#FEF2F2', color: 'error.main', '&:hover': { bgcolor: '#FEE2E2' } }}>
                                        <Trash2 size={18} />
                                     </IconButton>

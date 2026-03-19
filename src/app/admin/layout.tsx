@@ -3,7 +3,6 @@
 import React from 'react';
 import {
    Box,
-   Backdrop,
    Drawer,
    List,
    ListItem,
@@ -14,15 +13,16 @@ import {
    AppBar,
    Toolbar,
    IconButton,
-   useTheme,
    Button,
-   CircularProgress,
 } from '@mui/material';
 import { Menu } from '@mui/icons-material';
 import { useLogoutMutation } from '@/hooks/api/useAuth';
 import { useRouter, usePathname } from 'next/navigation';
-import { BookTemplateIcon, HospitalIcon, LogOut, Settings } from 'lucide-react';
+import { BookTemplateIcon, HospitalIcon, LogOut } from 'lucide-react';
 import Image from 'next/image';
+import UserProfile from '@/container/UserProfile';
+import LogoutConfirmDialog from '@/container/LogoutConfirmDialog';
+import BackDropLoading from '@/container/BackdropLoader';
 
 const drawerWidth = 240;
 
@@ -32,16 +32,48 @@ export default function AdminLayout({
    children: React.ReactNode;
 }) {
    const { mutate: logout, isPending } = useLogoutMutation();
-   const theme = useTheme();
    const router = useRouter();
    const pathname = usePathname();
    const [mobileOpen, setMobileOpen] = React.useState(false);
+   const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false);
    const [pendingPath, setPendingPath] = React.useState<string | null>(null);
    const [isNavigating, startNavigation] = React.useTransition();
 
+   const blurActiveElement = React.useCallback(() => {
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement) {
+         activeElement.blur();
+      }
+   }, []);
+
    const handleDrawerToggle = () => {
+      if (mobileOpen) {
+         blurActiveElement();
+      }
       setMobileOpen(!mobileOpen);
    };
+
+   const handleOpenLogoutDialog = React.useCallback(() => {
+      blurActiveElement();
+      if (mobileOpen) {
+         setMobileOpen(false);
+         setTimeout(() => {
+            setLogoutDialogOpen(true);
+         }, 0);
+         return;
+      }
+      setLogoutDialogOpen(true);
+   }, [blurActiveElement, mobileOpen]);
+
+   const handleCloseLogoutDialog = React.useCallback(() => {
+      if (!isPending) {
+         setLogoutDialogOpen(false);
+      }
+   }, [isPending]);
+
+   const handleConfirmLogout = React.useCallback(() => {
+      logout();
+   }, [logout]);
 
    const handleNavigate = React.useCallback(
       (path: string) => {
@@ -64,6 +96,7 @@ export default function AdminLayout({
          setPendingPath(null);
       }
    }, [pathname, pendingPath]);
+
    const menuItems = [
       { text: 'Clinics', icon: <HospitalIcon size={20} />, path: '/admin' },
       { text: 'Templates', icon: <BookTemplateIcon />, path: '/admin/templates' },
@@ -135,7 +168,7 @@ export default function AdminLayout({
          <Box sx={{ p: 2, borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
             <Button
                fullWidth
-               onClick={() => logout()}
+               onClick={handleOpenLogoutDialog}
                startIcon={<LogOut size={18} />}
                sx={{
                   color: '#94A3B8',
@@ -156,16 +189,20 @@ export default function AdminLayout({
             minHeight: '100vh',
             bgcolor: 'background.default',
          }}>
-         <Backdrop
-            open={isNavigating}
-            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2000 }}>
-            <CircularProgress color='inherit' />
-         </Backdrop>
+         <LogoutConfirmDialog
+            open={logoutDialogOpen}
+            onClose={handleCloseLogoutDialog}
+            onConfirm={handleConfirmLogout}
+            isLoading={isPending}
+            roleLabel='admin'
+         />
+         <BackDropLoading isLoading={isNavigating} />
          <AppBar
             position='fixed'
             sx={{
                width: { sm: `calc(100% - ${drawerWidth}px)` },
                ml: { sm: `${drawerWidth}px` },
+               px: { xs: 2, sm: 4 },
                bgcolor: 'background.paper',
                color: 'text.primary',
                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.03)',
@@ -181,21 +218,23 @@ export default function AdminLayout({
                   <Menu />
                </IconButton>
                <Box sx={{ flexGrow: 1 }} />
+               <UserProfile />
                <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => logout()}
+                  onClick={handleOpenLogoutDialog}
                   disabled={isPending}
                   startIcon={<LogOut size={18} />}
-                  sx={{ 
+                  sx={{
                      borderRadius: '8px',
+                     ml: 2,
                      display: { xs: 'none', sm: 'flex' }
                   }}>
                   Logout
                </Button>
                <IconButton
                   color="inherit"
-                  onClick={() => logout()}
+                  onClick={handleOpenLogoutDialog}
                   disabled={isPending}
                   sx={{ display: { xs: 'flex', sm: 'none' } }}>
                   <LogOut size={20} />

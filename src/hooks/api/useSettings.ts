@@ -8,6 +8,7 @@ export const useClinicProfile = () => {
         queryKey: ['clinic-profile'],
         queryFn: async () => {
             const { data } = await apiClient.get('/settings/profile');
+            console.log('Clinic profile data:', data);
             return data;
         },
     });

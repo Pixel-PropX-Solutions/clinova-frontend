@@ -35,6 +35,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import BackDropLoading from '@/container/BackdropLoader';
 import UserProfile from '@/container/UserProfile';
+import LogoutConfirmDialog from '@/container/LogoutConfirmDialog';
 
 const drawerWidth = 260;
 
@@ -68,12 +69,26 @@ export default function DashboardLayout({
    const router = useRouter();
    const pathname = usePathname();
    const [mobileOpen, setMobileOpen] = React.useState(false);
+   const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false);
    const [clinic, setClinic] = React.useState('main-clinic');
    const [pendingPath, setPendingPath] = React.useState<string | null>(null);
    const [isNavigating, startNavigation] = React.useTransition();
 
    const handleDrawerToggle = () => {
       setMobileOpen(!mobileOpen);
+   };
+
+   const handleOpenLogoutDialog = () => {
+      setLogoutDialogOpen(true);
+   };
+
+   const handleCloseLogoutDialog = () => {
+      setLogoutDialogOpen(false);
+   };
+
+   const handleConfirmLogout = () => {
+      setLogoutDialogOpen(false);
+      logout();
    };
 
    const handleNavigate = React.useCallback(
@@ -173,7 +188,7 @@ export default function DashboardLayout({
          <Box sx={{ p: 2, borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
             <Button
                fullWidth
-               onClick={() => logout()}
+               onClick={handleOpenLogoutDialog}
                startIcon={<LogOut size={18} />}
                sx={{
                   color: '#94A3B8',
@@ -190,12 +205,19 @@ export default function DashboardLayout({
    return (
       <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F6FAFF' }}>
          <BackDropLoading isLoading={isNavigating} />
+         <LogoutConfirmDialog
+            open={logoutDialogOpen}
+            onClose={handleCloseLogoutDialog}
+            onConfirm={handleConfirmLogout}
+            roleLabel='user'
+         />
          <AppBar
             position='fixed'
             sx={{
                width: { sm: `calc(100% - ${drawerWidth}px)` },
                ml: { sm: `${drawerWidth}px` },
                bgcolor: 'white',
+               px: { xs: 3, sm: 6 },
                color: 'text.primary',
                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.03)',
                borderBottom: '1px solid #E3EEF7',
@@ -244,7 +266,7 @@ export default function DashboardLayout({
                   }}>
                      <Bell size={20} color="#64748B" />
                   </IconButton>
-                  
+
                   <UserProfile />
                </Box>
             </Toolbar>

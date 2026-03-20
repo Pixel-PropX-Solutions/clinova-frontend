@@ -41,9 +41,11 @@ import {
    useUploadLogo,
    useChangePassword,
    useSetDefaultTemplate,
+   useAddClinicDoctor,
 } from '@/hooks/api/useSettings';
 import { useTemplates } from '@/hooks/api/useTemplates';
 import { toast } from 'react-toastify';
+import Doctors from '@/container/Doctors';
 
 interface TabPanelProps {
    children?: React.ReactNode;
@@ -89,6 +91,8 @@ export default function SettingsPage() {
       new_password: '',
       confirm_password: '',
    });
+
+  
 
    const [previewTemplate, setPreviewTemplate] = useState<any>(null);
    const previewContainerRef = useRef<HTMLDivElement | null>(null);
@@ -369,6 +373,7 @@ export default function SettingsPage() {
                                  value={profileState.address}
                                  onChange={(e) => setProfileState({ ...profileState, address: e.target.value })}
                               />
+                              <Doctors/>
 
                               <Box display='flex' justifyContent='flex-end' pt={2}>
                                  <Button

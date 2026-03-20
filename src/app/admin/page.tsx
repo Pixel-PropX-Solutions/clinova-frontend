@@ -81,6 +81,8 @@ export default function ClinicsPage() {
       email: '',
       address: '',
       logo_url: '',
+      default_doctor_name: '',
+      default_doctor_fee: '',
       plan: 'premium',
    });
 
@@ -119,6 +121,8 @@ export default function ClinicsPage() {
                email: '',
                address: '',
                logo_url: '',
+               default_doctor_name: '',
+               default_doctor_fee: '',
                plan: 'premium',
             });
          },
@@ -453,7 +457,7 @@ export default function ClinicsPage() {
                   <Grid item xs={12}>
                      <TextField
                         name='email'
-                        label='Admin Email'
+                        label='Clinic Email'
                         type='email'
                         fullWidth
                         size={isMobile ? 'small' : 'medium'}
@@ -465,7 +469,7 @@ export default function ClinicsPage() {
                   <Grid item xs={12}>
                      <TextField
                         name='phone'
-                        label='Primary Contact Number'
+                        label='Clinic Contact Number'
                         fullWidth
                         size={isMobile ? 'small' : 'medium'}
                         value={formData.phone}
@@ -482,6 +486,29 @@ export default function ClinicsPage() {
                         rows={isMobile ? 3 : 2}
                         size={isMobile ? 'small' : 'medium'}
                         value={formData.address}
+                        onChange={handleChange}
+                        InputProps={{ sx: { borderRadius: '12px' } }}
+                     />
+                  </Grid>
+                  <Grid item xs={12}>
+                     <TextField
+                        name='default_doctor_name'
+                        label='Main Doctor Name'
+                        fullWidth
+                        size={isMobile ? 'small' : 'medium'}
+                        value={formData.default_doctor_name}
+                        onChange={handleChange}
+                        InputProps={{ sx: { borderRadius: '12px' } }}
+                     />
+                  </Grid>
+                  <Grid item xs={12}>
+                     <TextField
+                        name='default_doctor_fee'
+                        label='Main Doctor Fee'
+                        type='number'
+                        fullWidth
+                        size={isMobile ? 'small' : 'medium'}
+                        value={formData.default_doctor_fee}
                         onChange={handleChange}
                         InputProps={{ sx: { borderRadius: '12px' } }}
                      />

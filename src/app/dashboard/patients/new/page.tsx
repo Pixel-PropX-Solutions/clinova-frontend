@@ -20,6 +20,8 @@ import {
    Stack,
    useTheme,
    useMediaQuery,
+   Autocomplete,
+   SelectChangeEvent,
 } from '@mui/material';
 import {
    User,
@@ -57,6 +59,7 @@ export default function PatientsPage() {
       payment_method: 'Cash',
       template_id: '',
    });
+   const [doctors, setDoctors] = useState<{ fee: number; name: string }[]>([]);
 
    const [queryPhone, setQueryPhone] = useState('');
    const [patientId, setPatientId] = useState<string | null>(null);
@@ -71,15 +74,81 @@ export default function PatientsPage() {
    const createPatient = useCreatePatient();
    const createVisit = useCreateVisit();
 
-   // Auto-select clinic default template
+   const selectedDoctor = doctors.find((d) => d.name === formState.doctor);
+   const feeSuggestions = Array.from(
+      new Set(
+         [
+            clinic?.default_doctor_fee,
+            selectedDoctor?.fee,
+            ...doctors.map((d) => d.fee),
+         ]
+            .filter((fee): fee is number => typeof fee === 'number')
+            .map((fee) => String(fee)),
+      ),
+   );
+
+   // Load doctor list and auto-select clinic default template once
    useEffect(() => {
-      if (clinic?.default_template_id && !formState.template_id) {
+      if (!clinic) {
+         return;
+      }
+
+      setDoctors(Array.isArray(clinic.doctors) ? clinic.doctors : []);
+
+      if (clinic.default_template_id) {
+         setFormState((prev) => {
+            if (prev.template_id) {
+               return prev;
+            }
+
+            return {
+               ...prev,
+               template_id: clinic.default_template_id,
+            };
+         });
+      }
+   }, [clinic]);
+
+   // Doctor/Fee defaults based on clinic doctor configuration
+   useEffect(() => {
+      if (!clinic || doctors.length === 0) {
+         return;
+      }
+
+      if (doctors.length === 1) {
+         const onlyDoctor = doctors[0];
+         const doctorName = clinic.default_doctor_name || onlyDoctor.name;
+         const doctorFee =
+            typeof clinic.default_doctor_fee === 'number'
+               ? clinic.default_doctor_fee
+               : onlyDoctor.fee;
+
          setFormState((prev) => ({
             ...prev,
-            template_id: clinic.default_template_id,
+            doctor: prev.doctor || doctorName || '',
+            fees:
+               prev.fees ||
+               (typeof doctorFee === 'number' ? String(doctorFee) : ''),
          }));
+         return;
       }
-   }, [clinic, formState.template_id]);
+
+      const defaultDoctor = doctors.find(
+         (doctor) => doctor.name === clinic.default_doctor_name,
+      );
+
+      setFormState((prev) => ({
+         ...prev,
+         doctor: prev.doctor || defaultDoctor?.name || '',
+         fees:
+            prev.fees ||
+            (typeof defaultDoctor?.fee === 'number'
+               ? String(defaultDoctor.fee)
+               : typeof clinic.default_doctor_fee === 'number'
+                  ? String(clinic.default_doctor_fee)
+                  : ''),
+      }));
+   }, [clinic, doctors]);
 
    // Trigger search when mobile length is adequate
    useEffect(() => {
@@ -121,6 +190,20 @@ export default function PatientsPage() {
    ) => {
       const { name, value } = e.target;
       setFormState((prev) => ({ ...prev, [name as string]: value }));
+   };
+
+   const handleDoctorSelect = (event: SelectChangeEvent<string>) => {
+      const doctorName = event.target.value;
+      const doctorDetails = doctors.find((d) => d.name === doctorName);
+
+      setFormState((prev) => ({
+         ...prev,
+         doctor: doctorName,
+         fees:
+            typeof doctorDetails?.fee === 'number'
+               ? String(doctorDetails.fee)
+               : prev.fees,
+      }));
    };
 
    const handleSubmit = async (e: React.FormEvent) => {
@@ -328,20 +411,44 @@ export default function PatientsPage() {
                            </Grid>
 
                            <Grid item xs={12} md={6}>
-                              <TextField
-                                 label='Doctor Name'
-                                 name='doctor'
-                                 fullWidth
-                                 value={formState.doctor}
-                                 onChange={handleChange}
-                                 InputProps={{
-                                    startAdornment: (
-                                       <InputAdornment position="start">
-                                          <User size={18} color="#64748B" />
-                                       </InputAdornment>
-                                    ),
-                                 }}
-                              />
+                              {doctors.length <= 1 ? (
+                                 <TextField
+                                    label='Doctor Name'
+                                    name='doctor'
+                                    fullWidth
+                                    value={formState.doctor}
+                                    onChange={handleChange}
+                                    helperText={
+                                       doctors.length === 1
+                                          ? 'Default doctor selected automatically.'
+                                          : ''
+                                    }
+                                    InputProps={{
+                                       readOnly: doctors.length === 1,
+                                       startAdornment: (
+                                          <InputAdornment position="start">
+                                             <User size={18} color="#64748B" />
+                                          </InputAdornment>
+                                       ),
+                                    }}
+                                 />
+                              ) : (
+                                 <FormControl fullWidth>
+                                    <InputLabel>Doctor Name</InputLabel>
+                                    <Select
+                                       name='doctor'
+                                       value={formState.doctor}
+                                       label='Doctor Name'
+                                       onChange={handleDoctorSelect}
+                                    >
+                                       {doctors.map((d, idx) => (
+                                          <MenuItem key={idx} value={d.name}>
+                                             {d.name}
+                                          </MenuItem>
+                                       ))}
+                                    </Select>
+                                 </FormControl>
+                              )}
                            </Grid>
 
                            <Grid item xs={12} md={6}>
@@ -362,20 +469,35 @@ export default function PatientsPage() {
                            </Grid>
 
                            <Grid item xs={12} md={6}>
-                              <TextField
-                                 label='Consultation Fees (₹)'
-                                 name='fees'
-                                 type='number'
-                                 fullWidth
+                              <Autocomplete
+                                 freeSolo
+                                 options={feeSuggestions}
                                  value={formState.fees}
-                                 onChange={handleChange}
-                                 InputProps={{
-                                    startAdornment: (
-                                       <InputAdornment position="start">
-                                          <Typography color="textSecondary" fontWeight="600">₹</Typography>
-                                       </InputAdornment>
-                                    ),
+                                 onChange={(_, value) => {
+                                    setFormState((prev) => ({
+                                       ...prev,
+                                       fees: typeof value === 'string' ? value : '',
+                                    }));
                                  }}
+                                 onInputChange={(_, value) => {
+                                    setFormState((prev) => ({ ...prev, fees: value }));
+                                 }}
+                                 renderInput={(params) => (
+                                    <TextField
+                                       {...params}
+                                       label='Consultation Fees (₹)'
+                                       type='number'
+                                       helperText='Select suggested fee or enter custom amount.'
+                                       InputProps={{
+                                          ...params.InputProps,
+                                          startAdornment: (
+                                             <InputAdornment position="start">
+                                                <Typography color="textSecondary" fontWeight="600">₹</Typography>
+                                             </InputAdornment>
+                                          ),
+                                       }}
+                                    />
+                                 )}
                               />
                            </Grid>
 

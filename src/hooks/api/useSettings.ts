@@ -2,6 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'react-toastify';
 
+export interface ClinicDoctorPayload {
+    name: string;
+    fee: number;
+}
+
 // Get clinic profile
 export const useClinicProfile = () => {
     return useQuery({
@@ -93,6 +98,26 @@ export const useSetDefaultTemplate = () => {
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.detail || 'Failed to set default template');
+        },
+    });
+};
+
+// Add clinic doctor
+export const useAddClinicDoctor = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ clinicId, doctor }: { clinicId: string; doctor: ClinicDoctorPayload }) => {
+            const { data } = await apiClient.post(`/clinics/${clinicId}/doctors`, doctor);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['clinic-profile'] });
+            queryClient.invalidateQueries({ queryKey: ['clinics'] });
+            toast.success('Doctor added successfully');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.detail || 'Failed to add doctor');
         },
     });
 };

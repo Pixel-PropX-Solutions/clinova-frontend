@@ -204,7 +204,7 @@ const LoginPage = () => {
                         control={<Checkbox value="remember" color="primary" sx={{ borderRadius: '4px' }} />}
                         label={<Typography variant="body2" color="textSecondary">Remember me</Typography>}
                      />
-                     <Link href="#" variant="body2" sx={{ fontWeight: 600, textDecoration: 'none' }}>
+                     <Link href="/forgot-password" variant="body2" sx={{ fontWeight: 600, textDecoration: 'none' }}>
                         Forgot password?
                      </Link>
                   </Box>
@@ -224,7 +224,7 @@ const LoginPage = () => {
 
                   <Typography variant='body2' color='text.secondary' align='center'>
                      Don&apos;t have an account?{' '}
-                     <Link href="#" sx={{ fontWeight: 600, textDecoration: 'none' }}>
+                     <Link href="/contact" sx={{ fontWeight: 600, textDecoration: 'none' }}>
                         Contact Support
                      </Link>
                   </Typography>

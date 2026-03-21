@@ -1,68 +1,99 @@
-:root {
-  --font-inter: 'Inter', sans-serif;
-  --primary-gradient: linear-gradient(135deg, #2F5FA5 0%, #5CC6C4 100%);
-  --bg-radial: radial-gradient(circle at center, #F6FAFF 0%, #E6F3FF 100%);
-}
+@import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+@layer base {
+  :root {
+    --primary-gradient: linear-gradient(135deg, #2F5FA5 0%, #5CC6C4 100%);
+    --bg-radial: radial-gradient(circle at center, #F6FAFF 0%, #E6F3FF 100%);
+  }
 
-body {
-  background: var(--bg-radial);
-  color: #0F172A;
-  min-height: 100vh;
-  font-family: var(--font-inter);
-}
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
 
-/* Orbit Motif */
-.orbit-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-  overflow: hidden;
-}
+  body {
+    background: var(--bg-radial);
+    color: #0F172A;
+    min-height: 100vh;
+    font-family: var(--font-inter), sans-serif;
+  }
 
-.orbit-circle {
-  position: absolute;
-  border: 1px solid rgba(47, 95, 165, 0.05);
-  border-radius: 50%;
-}
+  .font-display {
+    font-family: var(--font-sora), var(--font-inter), sans-serif;
+  }
 
-.orbit-1 {
-  width: 400px;
-  height: 400px;
-  top: -100px;
-  right: -100px;
-}
+  .font-body {
+    font-family: var(--font-plex), var(--font-inter), sans-serif;
+  }
 
-.orbit-2 {
-  width: 600px;
-  height: 600px;
-  bottom: -200px;
-  left: -200px;
-}
+  .font-inter {
+    font-family: var(--font-inter), sans-serif;
+  }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
+  .font-plex {
+    font-family: var(--font-plex), sans-serif;
+  }
 
-::-webkit-scrollbar-track {
-  background: #F6FAFF;
-}
+  .font-sora {
+    font-family: var(--font-sora), sans-serif;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #E3EEF7;
-  border-radius: 4px;
-}
+  .font-geist {
+    font-family: var(--font-geist-sans), sans-serif;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #5CC6C4;
+  .font-geist-mono {
+    font-family: var(--font-geist-mono), monospace;
+  }
+
+  /* Orbit Motif */
+  .orbit-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .orbit-circle {
+    position: absolute;
+    border: 1px solid rgba(47, 95, 165, 0.05);
+    border-radius: 50%;
+  }
+
+  .orbit-1 {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    right: -100px;
+  }
+
+  .orbit-2 {
+    width: 600px;
+    height: 600px;
+    bottom: -200px;
+    left: -200px;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #F6FAFF;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #E3EEF7;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #5CC6C4;
+  }
 }

@@ -53,16 +53,15 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
    useEffect(() => {
       if (isInitializing) return;
 
-      if (!token) {
-         if (
-            pathname !== '/' &&
+      const isPublicRoute =
+         pathname === '/' || pathname === '/login' || pathname === '/contact' || pathname.startsWith('/forgot-password');
 
-            !pathname.startsWith('/forgot-password')
-         ) {
+      if (!token) {
+         if (!isPublicRoute) {
             router.push('/');
          }
       } else {
-         if (pathname === '/') {
+         if (pathname === '/' || pathname === '/login' || pathname === '/contact' || pathname.startsWith('/forgot-password')) {
             if (role === 'admin') router.push('/admin');
             else router.push('/dashboard');
          }

@@ -1,8 +1,8 @@
 
-import LoginPage from "@/container/Login";
+import LandingPage from "@/container/LandingPage";
 
 export default function Home() {
   return (
-    <LoginPage/>
+    <LandingPage/>
   );
 }

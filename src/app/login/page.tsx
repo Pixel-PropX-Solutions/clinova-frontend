@@ -7,7 +7,6 @@ import {
    Typography,
    Box,
    Grid,
-   useTheme,
    CircularProgress,
    InputAdornment,
    Checkbox,
@@ -21,7 +20,6 @@ import Image from 'next/image';
 const LoginPage = () => {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
-   const theme = useTheme();
    const { mutate: login, isPending } = useAuthMutation();
 
    const handleSubmit = (e: React.FormEvent) => {

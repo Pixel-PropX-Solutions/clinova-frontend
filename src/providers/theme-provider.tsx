@@ -77,9 +77,9 @@ const theme = createTheme({
           },
         },
         containedPrimary: {
-          background: 'linear-gradient(135deg, #2F5FA5 0%, #5CC6C4 100%)',
+          background: '#2F5FA5',
           '&:hover': {
-            background: 'linear-gradient(135deg, #2F5FA5 20%, #5CC6C4 120%)',
+            background: ' ',
             boxShadow: '0 8px 20px rgba(92, 198, 196, 0.3)',
           },
         },

@@ -122,9 +122,6 @@ export default function PatientListPage() {
                   sx={{ width: { xs: '100%', sm: 'auto' } }}
                />
                <Stack direction="row" spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' }, justifyContent: 'flex-end' }}>
-                  <IconButton sx={{ bgcolor: 'white', border: '1px solid #E3EEF7', borderRadius: '12px', p: 1 }}>
-                     <Filter size={20} color="#64748B" />
-                  </IconButton>
                   <Button
                      variant='contained'
                      fullWidth
@@ -140,7 +137,7 @@ export default function PatientListPage() {
          </Box>
 
          <Card sx={{ borderRadius: { xs: '16px', sm: '24px' }, boxShadow: '0 10px 40px rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 'calc(100vh - 300px)' }}>
+            <TableContainer sx={{ maxHeight: 'calc(100vh - 100px)' }}>
                <Table stickyHeader aria-label="patient list table">
                   <TableHead>
                      <TableRow>
@@ -281,7 +278,7 @@ export default function PatientListPage() {
                      ) : (
                         <TableRow>
                            <TableCell colSpan={6} align='center' sx={{ py: 10 }}>
-                              <Box sx={{ opacity: 0.5, mb: 2 }}>
+                              <Box sx={{ opacity: 0.5, mb: 2 }} display='flex' justifyContent='center'>
                                  <User size={48} />
                               </Box>
                               <Typography variant='h6' color='text.secondary'>

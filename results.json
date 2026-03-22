@@ -1,0 +1,26 @@
+[
+  {
+    "file": "components\\ui\\button.tsx",
+    "line": 52,
+    "tag": "Button",
+    "attrs": "ButtonPrimitive data-slot=\"button\" className={cn(buttonVariants({ variant, size, className }))} {...props} /",
+    "hasOnClick": false,
+    "reason": "No onClick found"
+  },
+  {
+    "file": "container\\DashBoard.tsx",
+    "line": 183,
+    "tag": "Button",
+    "attrs": "Button variant=\"contained\" startIcon={<Download size={18} />}",
+    "hasOnClick": false,
+    "reason": "No onClick found"
+  },
+  {
+    "file": "container\\navbar.tsx",
+    "line": 166,
+    "tag": "Button",
+    "attrs": "Button sx={{ color: '#475569', fontWeight: 600, px: 2, borderRadius: '8px', '&:hover': { bgcolor: '#F1F5F9', color: 'primary.main' } }}",
+    "hasOnClick": false,
+    "reason": "No onClick found"
+  }
+]

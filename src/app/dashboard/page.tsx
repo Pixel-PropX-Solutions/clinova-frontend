@@ -26,6 +26,7 @@ import {
    Clock,
 } from 'lucide-react';
 import { useDashboardStats } from '@/hooks/api/useDashboard';
+import { apiClient } from '@/lib/api-client';
 import {
    XAxis,
    YAxis,
@@ -93,32 +94,8 @@ export default function DashboardPage() {
    const summary = data?.summary || {};
    const totalRevenue = Number(summary.total_revenue || 0);
    const totalVisits = Number(summary.total_visits || 0);
-   const averageConsultation = totalVisits > 0 ? Math.round(totalRevenue / totalVisits) : 0;
    const paymentBreakdown = data?.payment_breakdown || {};
-   const genderBreakdown = data?.demographics?.gender || {};
-   const rawAgeData = (data?.demographics?.age_distribution || data?.demographics?.age || []) as Array<{
-      range?: string;
-      group?: string;
-      count?: number;
-   }>;
-   const ageData = rawAgeData.map((item) => ({
-      range: item.range || item.group || 'N/A',
-      count: Number(item.count || 0),
-   }));
-   const genderData = [
-      {
-         name: 'Male',
-         value: Number(genderBreakdown.male || genderBreakdown.Male || 0),
-      },
-      {
-         name: 'Female',
-         value: Number(genderBreakdown.female || genderBreakdown.Female || 0),
-      },
-      {
-         name: 'Other',
-         value: Number(genderBreakdown.other || genderBreakdown.Other || 0),
-      },
-   ];
+ 
    const pieData = Object.entries(paymentBreakdown).map(([name, value]) => ({
       name: name.charAt(0).toUpperCase() + name.slice(1),
       value: Number(value || 0),
@@ -134,6 +111,14 @@ export default function DashboardPage() {
    }));
 
    const stats = [
+       {
+         title: 'Total Visits',
+         value: totalVisits,
+         subtitle: 'Total consultations',
+         icon: <Clock size={24} />,
+         color: '#8B5CF6',
+         bgcolor: '#F5F3FF',
+      },
       {
          title: 'Total Patients',
          value: summary.total_patients || 0,
@@ -150,38 +135,8 @@ export default function DashboardPage() {
          color: '#22C55E',
          bgcolor: '#F0FDF4',
       },
-      {
-         title: 'Cash Revenue',
-         value: formatCurrency(Number(summary.cash_revenue || 0)),
-         subtitle: 'Physical payments',
-         icon: <Wallet size={24} />,
-         color: '#F59E0B',
-         bgcolor: '#FFFBEB',
-      },
-      {
-         title: 'Digital Revenue',
-         value: formatCurrency(Number(summary.online_revenue || 0)),
-         subtitle: 'UPI & Card transactions',
-         icon: <CreditCard size={24} />,
-         color: '#06B6D4',
-         bgcolor: '#ECFEFF',
-      },
-      {
-         title: 'Avg. Consultation',
-         value: formatCurrency(averageConsultation),
-         subtitle: `${totalVisits} Total Visits`,
-         icon: <Clock size={24} />,
-         color: '#EF4444',
-         bgcolor: '#FEF2F2',
-      },
-      // {
-      //    title: 'Average Age',
-      //    value: `${summary.avg_age || 0} Yrs`,
-      //    subtitle: 'Patient demographic',
-      //    icon: <Users size={24} />,
-      //    color: '#6366F1',
-      //    bgcolor: '#EEF2FF',
-      // },
+    
+     
    ];
 
    const COLORS = ['#2F5FA5', '#5CC6C4', '#F59E0B', '#EF4444'];
@@ -272,10 +227,23 @@ export default function DashboardPage() {
                      variant='contained'
                      fullWidth
                      startIcon={<Download size={18} />}
-                     onClick={() => {
-                        const start = dateRange.startDate.toISOString();
-                        const end = dateRange.endDate.toISOString();
-                        window.open(`${process.env.NEXT_PUBLIC_API_URL}/export/bills?format=xlsx&start_date=${start}&end_date=${end}`, '_blank');
+                     onClick={async () => {
+                        try {
+                           const start = dateRange.startDate.toISOString();
+                           const end = dateRange.endDate.toISOString();
+                           const response = await apiClient.get(`/export/bills?format=xlsx&start_date=${start}&end_date=${end}`, {
+                              responseType: 'blob',
+                           });
+                           const url = window.URL.createObjectURL(new Blob([response.data]));
+                           const link = document.createElement('a');
+                           link.href = url;
+                           link.setAttribute('download', `bills_${format(new Date(), 'yyyyMMdd')}.xlsx`);
+                           document.body.appendChild(link);
+                           link.click();
+                           link.parentNode?.removeChild(link);
+                        } catch (error) {
+                           console.error('Export failed:', error);
+                        }
                      }}
                      sx={{ borderRadius: '12px', height: 48, px: 3, whiteSpace: 'nowrap' }}
                   >
@@ -285,9 +253,9 @@ export default function DashboardPage() {
             </Stack>
          </Box>
 
-         <Grid container spacing={{ xs: 2, md: 3, lg: 1 }} mb={5}>
+         <Grid container spacing={{ xs: 1, sm: 2, md: 3, lg: 1 }} mb={5}>
             {stats.map((stat, i) => (
-               <Grid item xs={12} sm={6} md={4} lg={2.4} key={i}>
+               <Grid item xs={12} sm={6} md={4} lg={4} key={i}>
                   <Card
                      elevation={0}
                      sx={{
@@ -367,9 +335,11 @@ export default function DashboardPage() {
                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '12px' }}
                            formatter={(value) => [`₹${value}`, 'Revenue']}
                         />
+                        <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
                         <Area
                            type="monotone"
                            dataKey='revenue'
+                           name="Revenue"
                            stroke="#2F5FA5"
                            strokeWidth={3}
                            fillOpacity={1}
@@ -402,92 +372,13 @@ export default function DashboardPage() {
                            outerRadius="80%"
                            paddingAngle={8}
                            dataKey="value"
+                           label={({ value }) => `₹${Number(value).toLocaleString()}`}
                         >
                            {pieData.map((entry, index) => (
                               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} radius={4} />
                            ))}
                         </Pie>
-                        <Tooltip />
-                        <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                     </PieChart>
-                  </ResponsiveContainer>
-               </Card>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-               <Card
-                  elevation={0}
-                  sx={{
-                     p: { xs: 2, md: 4 },
-                     borderRadius: '24px',
-                     border: '1px solid #E3EEF7',
-                     height: { xs: 400, md: 450 },
-                  }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                     <Typography variant='h6' fontWeight='800' color="#0F172A">
-                        Age Distribution
-                     </Typography>
-                     <Chip label="Demographics" size="small" sx={{ fontWeight: 700, bgcolor: '#F1F5F9' }} />
-                  </Box>
-                  <ResponsiveContainer width='100%' height='85%'>
-                     <BarChart data={ageData.length > 0 ? ageData : [{ range: 'N/A', count: 0 }]}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                        <XAxis
-                           dataKey="range"
-                           axisLine={false}
-                           tickLine={false}
-                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
-                           dy={10}
-                        />
-                        <YAxis
-                           axisLine={false}
-                           tickLine={false}
-                           tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
-                        />
-                        <Tooltip
-                           contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '12px' }}
-                        />
-                        <Bar
-                           dataKey="count"
-                           fill="#5CC6C4"
-                           radius={[6, 6, 0, 0]}
-                           barSize={20}
-                        />
-                     </BarChart>
-                  </ResponsiveContainer>
-               </Card>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-               <Card
-                  elevation={0}
-                  sx={{
-                     p: { xs: 2, md: 4 },
-                     borderRadius: '24px',
-                     border: '1px solid #E3EEF7',
-                     height: { xs: 400, md: 450 },
-                     display: 'flex',
-                     flexDirection: 'column'
-                  }}>
-                  <Typography variant='h6' fontWeight='800' color="#0F172A" mb={4}>
-                     Gender Breakdown
-                  </Typography>
-                  <ResponsiveContainer width='100%' height='100%'>
-                     <PieChart>
-                        <Pie
-                           data={genderData}
-                           innerRadius="60%"
-                           outerRadius="80%"
-                           paddingAngle={8}
-                           dataKey="value"
-                        >
-                           {genderData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} radius={4} />
-                           ))}
-                        </Pie>
-                        <Tooltip
-                           contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '12px' }}
-                        />
+                        <Tooltip formatter={(value) => `₹${Number(value).toLocaleString()}`} />
                         <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
                      </PieChart>
                   </ResponsiveContainer>
@@ -532,9 +423,11 @@ export default function DashboardPage() {
                         <Tooltip
                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '12px' }}
                         />
+                        <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
                         <Line
                            type="monotone"
                            dataKey="revenue"
+                           name="Revenue"
                            stroke="#5CC6C4"
                            strokeWidth={4}
                            dot={{ r: 4, fill: '#5CC6C4', strokeWidth: 2, stroke: 'white' }}

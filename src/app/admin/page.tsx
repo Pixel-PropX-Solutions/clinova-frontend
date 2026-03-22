@@ -81,8 +81,7 @@ export default function ClinicsPage() {
       email: '',
       address: '',
       logo_url: '',
-      default_doctor_name: '',
-      default_doctor_fee: '',
+      doctors: [{ name: '', specialization: '', fee: '' }],
       plan: 'premium',
    });
 
@@ -100,6 +99,13 @@ export default function ClinicsPage() {
       setFormData({ ...formData, [e.target.name]: e.target.value });
    };
 
+   const handleDoctorChange = (field: string, value: string) => {
+      setFormData((prev) => ({
+         ...prev,
+         doctors: [{ ...prev.doctors[0], [field]: value }]
+      }));
+   };
+
    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>, clinicId?: string) => {
       if (e.target.files && e.target.files[0]) {
          const file = e.target.files[0];
@@ -112,7 +118,20 @@ export default function ClinicsPage() {
    };
 
    const handleCreate = () => {
-      createClinic.mutate(formData, {
+      const payload = {
+         ...formData,
+         doctors: [{
+            name: formData.doctors[0].name,
+            specialization: formData.doctors[0].specialization,
+            fee: Number(formData.doctors[0].fee) || 0
+         }]
+      };
+      // Omit `doctors` if name is not provided, although normally it should be required.
+      if (!payload.doctors[0].name.trim()) {
+         payload.doctors = [];
+      }
+
+      createClinic.mutate(payload, {
          onSuccess: () => {
             handleClose();
             setFormData({
@@ -121,8 +140,7 @@ export default function ClinicsPage() {
                email: '',
                address: '',
                logo_url: '',
-               default_doctor_name: '',
-               default_doctor_fee: '',
+               doctors: [{ name: '', specialization: '', fee: '' }],
                plan: 'premium',
             });
          },
@@ -415,7 +433,7 @@ export default function ClinicsPage() {
             open={open}
             onClose={handleClose}
             fullWidth={!isMobile}
-            maxWidth='xs'
+            maxWidth='sm'
             // fullScreen={isMobile}
             scroll="paper"
             PaperProps={{
@@ -492,24 +510,32 @@ export default function ClinicsPage() {
                   </Grid>
                   <Grid item xs={12}>
                      <TextField
-                        name='default_doctor_name'
-                        label='Main Doctor Name'
+                        label='Doctor Name'
                         fullWidth
                         size={isMobile ? 'small' : 'medium'}
-                        value={formData.default_doctor_name}
-                        onChange={handleChange}
+                        value={formData.doctors[0].name}
+                        onChange={(e) => handleDoctorChange('name', e.target.value)}
                         InputProps={{ sx: { borderRadius: '12px' } }}
                      />
                   </Grid>
                   <Grid item xs={12}>
                      <TextField
-                        name='default_doctor_fee'
-                        label='Main Doctor Fee'
+                        label='Doctor Specialization'
+                        fullWidth
+                        size={isMobile ? 'small' : 'medium'}
+                        value={formData.doctors[0].specialization}
+                        onChange={(e) => handleDoctorChange('specialization', e.target.value)}
+                        InputProps={{ sx: { borderRadius: '12px' } }}
+                     />
+                  </Grid>
+                  <Grid item xs={12}>
+                     <TextField
+                        label='Doctor Fee'
                         type='number'
                         fullWidth
                         size={isMobile ? 'small' : 'medium'}
-                        value={formData.default_doctor_fee}
-                        onChange={handleChange}
+                        value={formData.doctors[0].fee}
+                        onChange={(e) => handleDoctorChange('fee', e.target.value)}
                         InputProps={{ sx: { borderRadius: '12px' } }}
                      />
                   </Grid>

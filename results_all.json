@@ -1,0 +1,314 @@
+[
+  {
+    "file": "app\\admin\\layout.tsx",
+    "line": 183,
+    "tag": "Button",
+    "attrs": "Button fullWidth onClick={handleOpenLogoutDialog} startIcon={<LogOut size={18} />} sx={{ color: '#94A3B8', justifyContent: 'flex-start', px: 2, '&:hover': { color: '#EF4444', bgcolor: 'rgba(239, 68, 68, 0.1)' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\layout.tsx",
+    "line": 236,
+    "tag": "Button",
+    "attrs": "Button variant=\"outlined\" size=\"small\" onClick={handleOpenLogoutDialog} disabled={isPending} startIcon={<LogOut size={18} />} sx={{ borderRadius: '8px', ml: 2, display: { xs: 'none', sm: 'flex' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\page.tsx",
+    "line": 179,
+    "tag": "Button",
+    "attrs": "Button variant='contained' fullWidth={false} startIcon={<Plus size={18} />} onClick={() => setOpen(true)} sx={{ borderRadius: '12px', height: 48, px: 3, width: { xs: '100%', sm: 'auto' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\page.tsx",
+    "line": 545,
+    "tag": "Button",
+    "attrs": "Button onClick={handleClose} sx={{ color: '#64748B', fontWeight: 700, width: { xs: '100%', sm: 'auto' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\page.tsx",
+    "line": 548,
+    "tag": "Button",
+    "attrs": "Button onClick={handleCreate} variant='contained' disabled={createClinic.isPending} sx={{ borderRadius: '12px', px: 4, fontWeight: 700, width: { xs: '100%', sm: 'auto' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\page.tsx",
+    "line": 724,
+    "tag": "Button",
+    "attrs": "Button onClick={onClose} variant=\"outlined\" sx={{ borderRadius: '12px', px: 4, fontWeight: 700, borderColor: '#E3EEF7', width: { xs: '100%', sm: 'auto' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\templates\\page.tsx",
+    "line": 215,
+    "tag": "Button",
+    "attrs": "Button variant='contained' fullWidth={isMobile} startIcon={<Plus size={18} />} onClick={() => setOpen(true)} sx={{ borderRadius: '12px', height: 48, px: { xs: 2, sm: 3 } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\templates\\page.tsx",
+    "line": 494,
+    "tag": "Button",
+    "attrs": "Button onClick={handleClose} sx={{ color: '#64748B', fontWeight: 700 }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\admin\\templates\\page.tsx",
+    "line": 495,
+    "tag": "Button",
+    "attrs": "Button onClick={handleSave} variant='contained' disabled={createTemplate.isPending || updateTemplate.isPending} sx={{ borderRadius: '12px', px: 4, fontWeight: 700 }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\contact\\page.tsx",
+    "line": 235,
+    "tag": "button",
+    "attrs": "button type='button' onClick={handleCaptchaReset} className='h-11 rounded-xl border border-[#BDD3F2] px-4 font-body text-sm font-semibold text-[#1D4D8A] transition hover:bg-[#EAF3FF] cursor-pointer'",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\contact\\page.tsx",
+    "line": 256,
+    "tag": "button",
+    "attrs": "button type='submit' disabled={submitContactQuery.isPending} className='inline-flex items-center justify-center rounded-full bg-[#183B7A] px-7 py-3 font-body text-sm font-semibold text-white shadow-lg shadow-[#183B7A]/20 transition hover:-translate-y-0.5 cursor-pointer disabled:cursor-not-allowed disabled:bg-[#183B7A]/50 disabled:shadow-none'",
+    "hasOnClick": false,
+    "reason": "No onClick"
+  },
+  {
+    "file": "app\\dashboard\\layout.tsx",
+    "line": 200,
+    "tag": "Button",
+    "attrs": "Button fullWidth onClick={handleOpenLogoutDialog} startIcon={<LogOut size={18} />} sx={{ color: '#94A3B8', justifyContent: 'flex-start', px: 2, '&:hover': { color: '#EF4444', bgcolor: 'rgba(239, 68, 68, 0.1)' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\layout.tsx",
+    "line": 252,
+    "tag": "Button",
+    "attrs": "Button endIcon={<LogOut size={12} />} size='small' variant='outlined' onClick={() => { handleOpenLogoutDialog() }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\page.tsx",
+    "line": 165,
+    "tag": "Button",
+    "attrs": "Button variant='outlined' fullWidth startIcon={<Calendar size={18} />} endIcon={<ChevronDown size={14} />} onClick={handlePopoverOpen} sx={{ borderRadius: '12px', px: 3, height: 48, bgcolor: 'white', borderColor: '#E3EEF7', color: '#475569', '&:hover': { borderColor: 'primary.main', bgcolor: '#F8FAFC' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\page.tsx",
+    "line": 220,
+    "tag": "Button",
+    "attrs": "Button variant=\"outlined\" fullWidth onClick={() => setDateRange({ startDate: startOfToday(), endDate: endOfToday(), key: 'selection' })} sx={{ borderRadius: '12px', height: 48, px: 3, borderColor: '#E3EEF7', color: '#475569' }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\page.tsx",
+    "line": 233,
+    "tag": "Button",
+    "attrs": "Button variant='contained' fullWidth startIcon={<Download size={18} />} onClick={() => { const start = dateRange.startDate.toISOString(); const end = dateRange.endDate.toISOString(); window.open(`${process.env.NEXT_PUBLIC_API_URL}/export/bills?format=xlsx&start_date=${start}&end_date=${end}`, '_blank'); }} sx={{ borderRadius: '12px', height: 48, px: 3, whiteSpace: 'nowrap' }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\patients\\new\\page.tsx",
+    "line": 271,
+    "tag": "Button",
+    "attrs": "Button startIcon={<ChevronLeft size={18} />} onClick={handleNavigateBack} disabled={isNavigating} sx={{ mb: 3, color: '#64748B', fontWeight: 600, '&:hover': { bgcolor: 'transparent', color: 'primary.main' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\patients\\new\\page.tsx",
+    "line": 514,
+    "tag": "Button",
+    "attrs": "Button type='submit' variant='contained' fullWidth size='large' disabled={createPatient.isPending || createVisit.isPending} startIcon={!(createPatient.isPending || createVisit.isPending) && <Printer size={20} />} sx={{ height: 56, fontSize: '18px', mt: 2 }}",
+    "hasOnClick": false,
+    "reason": "No onClick"
+  },
+  {
+    "file": "app\\dashboard\\patients\\page.tsx",
+    "line": 125,
+    "tag": "Button",
+    "attrs": "Button variant='contained' fullWidth startIcon={<PlusCircle size={18} />} onClick={() => handleNavigate('/dashboard/patients/new')} disabled={isNavigating} sx={{ borderRadius: '12px', height: 48, px: 3, whiteSpace: 'nowrap' }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\patients\\[id]\\page.tsx",
+    "line": 113,
+    "tag": "Button",
+    "attrs": "Button variant='contained' startIcon={<ChevronLeft size={18} />} onClick={handleNavigateBack} disabled={isNavigating} sx={{ borderRadius: '12px', px: 4 }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\patients\\[id]\\page.tsx",
+    "line": 132,
+    "tag": "Button",
+    "attrs": "Button startIcon={<ChevronLeft size={18} />} onClick={handleNavigateBack} disabled={isNavigating} sx={{ mb: 3, color: '#64748B', fontWeight: 600, '&:hover': { bgcolor: 'transparent', color: 'primary.main' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\patients\\[id]\\page.tsx",
+    "line": 490,
+    "tag": "Button",
+    "attrs": "Button onClick={() => setDeleteDialogOpen(false)} sx={{ fontWeight: 700, color: '#64748B' }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\patients\\[id]\\page.tsx",
+    "line": 491,
+    "tag": "Button",
+    "attrs": "Button onClick={handleConfirmDelete} color='error' variant='contained' disabled={deleteVisitMutation.isPending} sx={{ borderRadius: '10px', px: 3, fontWeight: 700 }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\settings\\page.tsx",
+    "line": 380,
+    "tag": "Button",
+    "attrs": "Button type='submit' variant='contained' fullWidth={isMobile} startIcon={<Save size={20} />} disabled={updateProfile.isPending} sx={{ px: 5, height: 52, borderRadius: '12px', fontSize: '16px' }}",
+    "hasOnClick": false,
+    "reason": "No onClick"
+  },
+  {
+    "file": "app\\dashboard\\settings\\page.tsx",
+    "line": 450,
+    "tag": "Button",
+    "attrs": "Button size='small' variant='contained' onClick={(e) => { e.stopPropagation(); setDefaultTemplate.mutate(t._id); }} disabled={setDefaultTemplate.isPending} sx={{ borderRadius: '8px', textTransform: 'none', px: 1.5, fontSize: '0.75rem' }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\settings\\page.tsx",
+    "line": 500,
+    "tag": "Button",
+    "attrs": "Button size=\"small\" variant=\"outlined\" startIcon={<Printer size={14} />} onClick={() => { const iframe = document.getElementById(`template-preview-${previewTemplate._id}`) as HTMLIFrameElement; if (iframe && iframe.contentWindow) { iframe.contentWindow.focus(); iframe.contentWindow.print(); } }} sx={{ borderRadius: '6px', textTransform: 'none', py: 0.25, px: 1, fontSize: '0.75rem' }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "app\\dashboard\\settings\\page.tsx",
+    "line": 636,
+    "tag": "Button",
+    "attrs": "Button type='submit' variant='contained' color='primary' fullWidth={isMobile} disabled={changePassword.isPending} sx={{ py: 2, mt: 2, borderRadius: '12px', fontSize: '16px', fontWeight: '700' }}",
+    "hasOnClick": false,
+    "reason": "No onClick"
+  },
+  {
+    "file": "app\\login\\page.tsx",
+    "line": 210,
+    "tag": "Button",
+    "attrs": "Button type='submit' fullWidth variant='contained' disabled={isPending || !email || !password} sx={{ height: 52, fontSize: '16px', mb: 3 }}",
+    "hasOnClick": false,
+    "reason": "No onClick"
+  },
+  {
+    "file": "components\\ui\\button.tsx",
+    "line": 52,
+    "tag": "Button",
+    "attrs": "ButtonPrimitive data-slot=\"button\" className={cn(buttonVariants({ variant, size, className }))} {...props} /",
+    "hasOnClick": false,
+    "reason": "No onClick found"
+  },
+  {
+    "file": "container\\DashBoard.tsx",
+    "line": 172,
+    "tag": "Button",
+    "attrs": "Button variant=\"outlined\" onClick={handlePopoverOpen} startIcon={<CalendarIcon size={18} />} sx={{ bgcolor: 'white' }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "container\\DashBoard.tsx",
+    "line": 183,
+    "tag": "Button",
+    "attrs": "Button variant=\"contained\" startIcon={<Download size={18} />}",
+    "hasOnClick": false,
+    "reason": "No onClick found"
+  },
+  {
+    "file": "container\\Doctors.tsx",
+    "line": 205,
+    "tag": "Button",
+    "attrs": "Button type='button' onClick={handleAddDoctor} variant='outlined' fullWidth disabled={addClinicDoctor.isPending || loading} sx={{ height: 56 }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "container\\LandingPage.tsx",
+    "line": 210,
+    "tag": "button",
+    "attrs": "button className=\"md:hidden\" aria-label=\"Toggle menu\" onClick={() => setMobileMenuOpen((prev) => !prev)}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "container\\LogoutConfirmDialog.tsx",
+    "line": 52,
+    "tag": "Button",
+    "attrs": "Button onClick={onClose} disabled={isLoading} variant='text'",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "container\\LogoutConfirmDialog.tsx",
+    "line": 55,
+    "tag": "Button",
+    "attrs": "Button onClick={onConfirm} color='error' variant='contained' disabled={isLoading}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "container\\navbar.tsx",
+    "line": 67,
+    "tag": "Button",
+    "attrs": "Button fullWidth onClick={handleDrawerToggle} sx={{ justifyContent: 'flex-start', py: 1.5, px: 2, borderRadius: '12px', color: '#475569', fontWeight: 600, '&:hover': { bgcolor: '#F1F5F9', color: 'primary.main' } }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "container\\navbar.tsx",
+    "line": 87,
+    "tag": "Button",
+    "attrs": "Button fullWidth variant='outlined' color='error' onClick={() => { handleDrawerToggle(); logoutMutation.mutate(); }} disabled={logoutMutation.isPending} sx={{ borderRadius: '12px', py: 1.5, fontWeight: 700 }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  },
+  {
+    "file": "container\\navbar.tsx",
+    "line": 166,
+    "tag": "Button",
+    "attrs": "Button sx={{ color: '#475569', fontWeight: 600, px: 2, borderRadius: '8px', '&:hover': { bgcolor: '#F1F5F9', color: 'primary.main' } }}",
+    "hasOnClick": false,
+    "reason": "No onClick found"
+  },
+  {
+    "file": "container\\navbar.tsx",
+    "line": 178,
+    "tag": "Button",
+    "attrs": "Button variant=\"outlined\" color=\"error\" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending} sx={{ ml: 2, borderRadius: '10px', fontWeight: 700, px: 3 }}",
+    "hasOnClick": true,
+    "reason": "Found onClick"
+  }
+]

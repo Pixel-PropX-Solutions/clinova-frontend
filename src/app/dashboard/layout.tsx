@@ -29,6 +29,7 @@ import {
    Search,
    Bell,
    ChevronDown,
+   User,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter, usePathname } from 'next/navigation';
@@ -55,8 +56,7 @@ const isMenuItemActive = (currentPath: string, itemPath: string) => {
    }
 
    return (
-      normalizedCurrentPath === normalizedItemPath ||
-      normalizedCurrentPath.startsWith(`${normalizedItemPath}/`)
+      normalizedCurrentPath === normalizedItemPath
    );
 };
 
@@ -70,7 +70,6 @@ export default function DashboardLayout({
    const pathname = usePathname();
    const [mobileOpen, setMobileOpen] = React.useState(false);
    const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false);
-   const [clinic, setClinic] = React.useState('main-clinic');
    const [pendingPath, setPendingPath] = React.useState<string | null>(null);
    const [isNavigating, startNavigation] = React.useTransition();
 
@@ -115,11 +114,9 @@ export default function DashboardLayout({
 
    const menuItems = [
       { text: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+      { text: "New Patient", icon: <User size={20} />, path: "/dashboard/patients/new" },
       { text: 'Patients', icon: <Users size={20} />, path: '/dashboard/patients' },
-      // { text: 'Appointments', icon: <Calendar size={20} />, path: '/dashboard/appointments' },
-      // { text: 'Prescriptions', icon: <FileText size={20} />, path: '/dashboard/prescriptions' },
-      // { text: 'Billing', icon: <Receipt size={20} />, path: '/dashboard/billing' },
-      // { text: 'Analytics', icon: <BarChart3 size={20} />, path: '/dashboard/analytics' },
+
       { text: 'Settings', icon: <Settings size={20} />, path: '/dashboard/settings' },
    ];
 
@@ -160,7 +157,7 @@ export default function DashboardLayout({
                            py: 1.2,
                            px: 2,
                            transition: 'all 0.3s',
-                           background: isActive ? 'linear-gradient(135deg, #2F5FA5 0%, #5CC6C4 100%)' : 'transparent',
+                           background: isActive ? '#1A3E70' : 'transparent',
                            '&:hover': {
                               bgcolor: isActive ? '' : 'rgba(255, 255, 255, 0.05)',
                            },
@@ -181,6 +178,20 @@ export default function DashboardLayout({
                            }}
                         />
                      </ListItemButton>
+                     {isActive && (
+                        <Box
+                           sx={{
+                              position: 'absolute',
+                              right: 0,
+                              top: 0,
+                              bottom: 0,
+                              width: 4,
+                              bgcolor: 'white',
+                              borderTopLeftRadius: '4px',
+                              borderBottomLeftRadius: '4px',
+                           }}
+                        />
+                     )}
                   </ListItem>
                );
             })}
@@ -232,43 +243,19 @@ export default function DashboardLayout({
                   <MenuIcon />
                </IconButton>
 
-               <Box sx={{
-                  display: { xs: 'none', md: 'flex' },
-                  alignItems: 'center',
-                  bgcolor: '#F6FAFF',
-                  px: 2,
-                  py: 0.5,
-                  borderRadius: '10px',
-                  width: { md: 200, lg: 300 },
-                  border: '1px solid #E3EEF7',
-                  transition: 'width 0.3s'
-               }}>
-                  <Search size={18} color="#64748B" />
-                  <InputBase
-                     placeholder="Search..."
-                     sx={{ ml: 1, flex: 1, fontSize: '14px' }}
-                  />
-               </Box>
-
-               <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                  <IconButton sx={{ color: '#64748B' }}>
-                     <Search size={20} />
-                  </IconButton>
-               </Box>
-
                <Box sx={{ flexGrow: 1 }} />
 
                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 2 } }}>
-                  <IconButton sx={{
-                     bgcolor: { xs: 'transparent', sm: '#F6FAFF' },
-                     border: { xs: 'none', sm: '1px solid #E3EEF7' },
-                     borderRadius: '10px'
-                  }}>
-                     <Bell size={20} color="#64748B" />
-                  </IconButton>
-
+               
                   <UserProfile />
                </Box>
+               <Button
+               endIcon={<LogOut size={12} />}
+               size='small'
+                  variant='outlined'
+                  onClick={() => { handleOpenLogoutDialog() }}>
+                  Logout
+               </Button>
             </Toolbar>
          </AppBar>
          <Box

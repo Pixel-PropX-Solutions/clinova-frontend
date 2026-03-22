@@ -72,7 +72,6 @@ export default function AdminTemplatesPage() {
    const [editingId, setEditingId] = useState<string | null>(null);
    const [formData, setFormData] = useState({
       template_name: '',
-      template_type: 'invoice',
       html_content: '',
       clinic_id: '',
       is_global: false,
@@ -85,7 +84,6 @@ export default function AdminTemplatesPage() {
       setEditingId(null);
       setFormData({
          template_name: '',
-         template_type: 'invoice',
          html_content: '',
          clinic_id: '',
          is_global: false,
@@ -96,7 +94,6 @@ export default function AdminTemplatesPage() {
    const handleOpenEdit = (template: any) => {
       setFormData({
          template_name: template.template_name,
-         template_type: template.template_type,
          html_content: template.html_content,
          clinic_id: template.clinic_id || '',
          is_global: template.is_global || false,
@@ -212,7 +209,7 @@ export default function AdminTemplatesPage() {
                   Dynamic Blueprints
                </Typography>
                <Typography variant='body1' color='text.secondary' sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
-                  Architect custom PDF layouts for invoices, parchis, and clinical reports.
+                  Architect custom PDF layouts for invoices, receipts, and clinical reports.
                </Typography>
             </Box>
             <Button
@@ -235,7 +232,6 @@ export default function AdminTemplatesPage() {
                      <TableHead sx={{ bgcolor: '#F8FAFC' }}>
                         <TableRow>
                            <TableCell sx={{ fontWeight: '700', color: '#64748B', py: 2, fontSize: { xs: '11px', sm: '12px' } }}>BLUEPRINT NAME</TableCell>
-                           {!isMobile && <TableCell sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>DOCUMENT TYPE</TableCell>}
                            {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>SCOPE</TableCell>}
                            <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B', fontSize: { xs: '11px', sm: '12px' } }}>ACTIONS</TableCell>
                         </TableRow>
@@ -261,21 +257,7 @@ export default function AdminTemplatesPage() {
                                        </Box>
                                     </Stack>
                                  </TableCell>
-                                 {!isMobile && (
-                                    <TableCell>
-                                       <Chip
-                                          label={template.template_type?.replace('_', ' ')}
-                                          size="small"
-                                          sx={{
-                                             textTransform: 'uppercase',
-                                             fontWeight: 800,
-                                             fontSize: '10px',
-                                             bgcolor: '#F1F5F9',
-                                             color: '#475569'
-                                          }}
-                                       />
-                                    </TableCell>
-                                 )}
+                               
                                  {!isTablet && (
                                     <TableCell>
                                        <Stack direction="row" spacing={1} alignItems="center">
@@ -366,21 +348,7 @@ export default function AdminTemplatesPage() {
                               InputProps={{ sx: { borderRadius: '12px' } }}
                            />
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                           <FormControl fullWidth>
-                              <InputLabel>Document Protocol</InputLabel>
-                              <Select
-                                 name='template_type'
-                                 value={formData.template_type}
-                                 label='Document Protocol'
-                                 onChange={handleChange}
-                                 sx={{ borderRadius: '12px' }}>
-                                 <MenuItem value='invoice'>Financial Invoice</MenuItem>
-                                 <MenuItem value='medical_parchi'>Clinical Parchi</MenuItem>
-                                 <MenuItem value='receipt'>Payment Receipt</MenuItem>
-                              </Select>
-                           </FormControl>
-                        </Grid>
+                       
                      </Grid>
 
                      <Box sx={{ p: 2, bgcolor: '#F8FAFC', borderRadius: '16px', border: '1px solid #E3EEF7' }}>

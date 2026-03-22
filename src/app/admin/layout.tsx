@@ -140,7 +140,7 @@ export default function AdminLayout({
                            py: 1.2,
                            px: 2,
                            transition: 'all 0.3s',
-                           background: isActive ? 'linear-gradient(135deg, #2F5FA5 0%, #5CC6C4 100%)' : 'transparent',
+                           background: isActive ? '#1A3E70' : 'transparent',
                            '&:hover': {
                               bgcolor: isActive ? '' : 'rgba(255, 255, 255, 0.05)',
                            },
@@ -160,6 +160,20 @@ export default function AdminLayout({
                               color: isActive ? 'white' : '#94A3B8'
                            }}
                         />
+                        {isActive && (
+                           <Box
+                              sx={{
+                                 position: 'absolute',
+                                 right: 0,
+                                 top: 0,
+                                 bottom: 0,
+                                 width: 4,
+                                 bgcolor: 'white',
+                                 borderTopLeftRadius: '4px',
+                                 borderBottomLeftRadius: '4px',
+                              }}
+                           />
+                        )}
                      </ListItemButton>
                   </ListItem>
                );

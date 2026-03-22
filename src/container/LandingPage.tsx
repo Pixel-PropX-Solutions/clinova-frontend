@@ -329,7 +329,7 @@ const LandingPage = () => {
                                     <p className="font-display mt-1 text-3xl font-bold text-[#0C6D65]">97</p>
                                 </div>
                                 <div className="rounded-2xl bg-[#FFF3E8] p-4">
-                                    <p className="font-body text-xs text-slate-500">Parchi Generated</p>
+                                    <p className="font-body text-xs text-slate-500">Receipts Generated</p>
                                     <p className="font-display mt-1 text-3xl font-bold text-[#B45309]">12K+</p>
                                 </div>
                                 <div className="rounded-2xl bg-[#EEF2FF] p-4">

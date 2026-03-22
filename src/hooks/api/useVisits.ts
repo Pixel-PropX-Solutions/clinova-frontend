@@ -11,7 +11,7 @@ export const useCreateVisit = () => {
             return res.data;
         },
         onSuccess: () => {
-            toast.success('Visit parchi created successfully');
+            toast.success('Visit receipt created successfully');
             queryClient.invalidateQueries({ queryKey: ['dashboard'] });
             queryClient.invalidateQueries({ queryKey: ['patients'] });
         },

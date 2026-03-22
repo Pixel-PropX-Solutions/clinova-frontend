@@ -3,8 +3,10 @@ import { apiClient } from '@/lib/api-client';
 import { toast } from 'react-toastify';
 
 export interface ClinicDoctorPayload {
+    id?: string;
     name: string;
     fee: number;
+    specialization?: string;
 }
 
 // Get clinic profile
@@ -118,6 +120,46 @@ export const useAddClinicDoctor = () => {
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.detail || 'Failed to add doctor');
+        },
+    });
+};
+
+// Update clinic doctor
+export const useUpdateClinicDoctor = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ clinicId, doctorId, doctor }: { clinicId: string; doctorId: string; doctor: ClinicDoctorPayload }) => {
+            const { data } = await apiClient.put(`/clinics/${clinicId}/doctors/${doctorId}`, doctor);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['clinic-profile'] });
+            queryClient.invalidateQueries({ queryKey: ['clinics'] });
+            toast.success('Doctor updated successfully');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.detail || 'Failed to update doctor');
+        },
+    });
+};
+
+// Delete clinic doctor
+export const useDeleteClinicDoctor = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ clinicId, doctorId }: { clinicId: string; doctorId: string }) => {
+            const { data } = await apiClient.delete(`/clinics/${clinicId}/doctors/${doctorId}`);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['clinic-profile'] });
+            queryClient.invalidateQueries({ queryKey: ['clinics'] });
+            toast.success('Doctor deleted successfully');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.detail || 'Failed to delete doctor');
         },
     });
 };

@@ -1,4 +1,4 @@
-import { useAddClinicDoctor, useClinicProfile } from '@/hooks/api/useSettings';
+import { useAddClinicDoctor, useUpdateClinicDoctor, useDeleteClinicDoctor, useClinicProfile } from '@/hooks/api/useSettings';
 import {
     Paper,
     Grid,
@@ -9,7 +9,9 @@ import {
     Chip,
     Box,
     Typography,
+    IconButton,
 } from '@mui/material';
+import { Edit2, Trash2, X, Check } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -17,19 +19,32 @@ import { toast } from 'react-toastify';
 const Doctors = () => {
     const { data: clinic } = useClinicProfile();
     const addClinicDoctor = useAddClinicDoctor();
+    const updateClinicDoctor = useUpdateClinicDoctor();
+    const deleteClinicDoctor = useDeleteClinicDoctor();
+    
     const [loading, setLoading] = useState(false);
 
+    // Form state for adding
     const [doctorState, setDoctorState] = useState({
         name: '',
         fee: '',
+        specialization: '',
     });
 
+    // Form state for editing
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editState, setEditState] = useState({
+        name: '',
+        fee: '',
+        specialization: '',
+    });
 
     const handleAddDoctor = () => {
         setLoading(true);
 
         const doctorName = doctorState.name.trim();
         const doctorFee = Number(doctorState.fee);
+        const specialization = doctorState.specialization.trim();
 
         if (!clinic?._id) {
             toast.error('Clinic not found');
@@ -55,11 +70,12 @@ const Doctors = () => {
                 doctor: {
                     name: doctorName,
                     fee: doctorFee,
+                    specialization: specialization || undefined,
                 },
             },
             {
                 onSuccess: () => {
-                    setDoctorState({ name: '', fee: '' });
+                    setDoctorState({ name: '', fee: '', specialization: '' });
                     setLoading(false);
                 },
                 onError: (error: any) => {
@@ -69,7 +85,72 @@ const Doctors = () => {
         );
     };
 
+    const handleEditStart = (doctor: any) => {
+        if (!doctor.id) {
+            toast.error("This doctor cannot be edited because it lacks an ID. Please delete and recreate.");
+            return;
+        }
+        setEditingId(doctor.id);
+        setEditState({
+            name: doctor.name || '',
+            fee: doctor.fee?.toString() || '0',
+            specialization: doctor.specialization || '',
+        });
+    }
 
+    const handleEditCancel = () => {
+        setEditingId(null);
+        setEditState({ name: '', fee: '', specialization: '' });
+    }
+
+    const handleEditSave = () => {
+        if (!editingId || !clinic?._id) return;
+        setLoading(true);
+
+        const doctorName = editState.name.trim();
+        const doctorFee = Number(editState.fee);
+        const specialization = editState.specialization.trim();
+
+        if (!doctorName) {
+            toast.error('Doctor name is required');
+            setLoading(false);
+            return;
+        }
+        if (!Number.isFinite(doctorFee) || doctorFee < 0) {
+            toast.error('Please enter a valid doctor fee');
+            setLoading(false);
+            return;
+        }
+        
+        updateClinicDoctor.mutate(
+            {
+                clinicId: clinic._id,
+                doctorId: editingId,
+                doctor: {
+                    name: doctorName,
+                    fee: doctorFee,
+                    specialization: specialization || undefined,
+                }
+            },
+            {
+                onSuccess: () => {
+                    setEditingId(null);
+                    setLoading(false);
+                },
+                onError: () => { setLoading(false); }
+            }
+        );
+    };
+
+    const handleDelete = (doctorId: string) => {
+        if (!clinic?._id || !doctorId) return;
+        if (confirm("Are you sure you want to delete this doctor?")) {
+            deleteClinicDoctor.mutate({
+                clinicId: clinic._id,
+                doctorId: doctorId
+            });
+        }
+    };
 
     return (
         <>
@@ -78,8 +159,8 @@ const Doctors = () => {
             </Divider>
 
             <Box>
-                <Grid container spacing={2} alignItems='center'>
-                    <Grid item xs={12} md={5}>
+                <Grid container spacing={2} alignItems='flex-start'>
+                    <Grid item xs={12} sm={4}>
                         <TextField
                             label='Doctor Name'
                             fullWidth
@@ -92,9 +173,22 @@ const Doctors = () => {
                             }
                         />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} sm={3}>
                         <TextField
-                            label='Consultation Fee'
+                            label='Specialization'
+                            fullWidth
+                            value={doctorState.specialization}
+                            onChange={(e) =>
+                                setDoctorState((prev) => ({
+                                    ...prev,
+                                    specialization: e.target.value,
+                                }))
+                            }
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                        <TextField
+                            label='Fee'
                             fullWidth
                             type='number'
                             inputProps={{ min: 0 }}
@@ -107,7 +201,7 @@ const Doctors = () => {
                             }
                         />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid item xs={12} sm={3}>
                         <Button
                             type='button'
                             onClick={handleAddDoctor}
@@ -127,32 +221,98 @@ const Doctors = () => {
                         No doctors added yet. Add doctors one by one with their consultation fees.
                     </Typography>
                 ) : (
-                    (clinic?.doctors || []).map((doctor: { name: string; fee: number }, index: number) => (
+                    (clinic?.doctors || []).map((doctor: any, index: number) => (
                         <Paper
-                            key={`${doctor.name}-${index}`}
+                            key={doctor.id || `${doctor.name}-${index}`}
                             elevation={0}
                             sx={{
                                 p: 1.5,
                                 borderRadius: '12px',
                                 border: '1px solid #E2E8F0',
                                 display: 'flex',
-                                justifyContent: 'space-between',
+                                flexWrap: 'wrap',
                                 alignItems: 'center',
+                                gap: 2,
+                                minHeight: 56,
                             }}>
-                            <Box display='flex' alignItems='center' gap={2}>
-                                <Typography variant='body1' fontWeight='600'>
-                                    {index + 1}.
-                                </Typography>
-                                <Typography variant='body1' fontWeight='600'>
-                                    {doctor.name}
-                                </Typography>
-                            </Box>
-                            <Chip
-                                label={`₹${doctor.fee}`}
-                                size='small'
-                                color='primary'
-                                variant='outlined'
-                            />
+                            {editingId === doctor.id ? (
+                                <Box sx={{ display: 'flex', flexGrow: 1, gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                                    <TextField
+                                        size="small"
+                                        label="Name"
+                                        value={editState.name}
+                                        onChange={(e) => setEditState({...editState, name: e.target.value})}
+                                        sx={{ minWidth: 150, flexGrow: 1 }}
+                                    />
+                                    <TextField
+                                        size="small"
+                                        label="Specialization"
+                                        value={editState.specialization}
+                                        onChange={(e) => setEditState({...editState, specialization: e.target.value})}
+                                        sx={{ minWidth: 150, flexGrow: 1 }}
+                                    />
+                                    <TextField
+                                        size="small"
+                                        label="Fee"
+                                        type="number"
+                                        value={editState.fee}
+                                        onChange={(e) => setEditState({...editState, fee: e.target.value})}
+                                        sx={{ width: 100 }}
+                                    />
+                                    <IconButton size="small" color="success" onClick={handleEditSave} disabled={updateClinicDoctor.isPending || loading} >
+                                        <Check size={18} />
+                                    </IconButton>
+                                    <IconButton size="small" color="error" onClick={handleEditCancel} >
+                                        <X size={18} />
+                                    </IconButton>
+                                </Box>
+                            ) : (
+                                <>
+                                    <Box display='flex' alignItems='center' gap={2} flexGrow={1}>
+                                        <Typography variant='body1' fontWeight='600'>
+                                            {index + 1}.
+                                        </Typography>
+                                        <Box>
+                                            <Typography variant='body1' fontWeight='600'>
+                                                {doctor.name}
+                                            </Typography>
+                                            {doctor.specialization && (
+                                                <Typography variant='body2' color='text.secondary'>
+                                                    {doctor.specialization}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
+                                    
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Chip
+                                            label={`₹${doctor.fee}`}
+                                            size='small'
+                                            color='primary'
+                                            variant='outlined'
+                                        />
+                                        {doctor.id && (
+                                            <>
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => handleEditStart(doctor)}
+                                                    sx={{ color: '#64748b' }}
+                                                >
+                                                    <Edit2 size={16} />
+                                                </IconButton>
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => handleDelete(doctor.id)}
+                                                    sx={{ color: '#ef4444' }}
+                                                    disabled={deleteClinicDoctor.isPending}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </IconButton>
+                                            </>
+                                        )}
+                                    </Box>
+                                </>
+                            )}
                         </Paper>
                     ))
                 )}

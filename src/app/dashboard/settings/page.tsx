@@ -34,6 +34,7 @@ import {
    UploadCloud,
    CheckCircle2,
    Eye,
+   Printer,
 } from 'lucide-react';
 import {
    useClinicProfile,
@@ -373,7 +374,6 @@ export default function SettingsPage() {
                                  value={profileState.address}
                                  onChange={(e) => setProfileState({ ...profileState, address: e.target.value })}
                               />
-                              <Doctors/>
 
                               <Box display='flex' justifyContent='flex-end' pt={2}>
                                  <Button
@@ -386,6 +386,8 @@ export default function SettingsPage() {
                                     {updateProfile.isPending ? 'Saving...' : 'Save Profile'}
                                  </Button>
                               </Box>
+                              <Doctors/>
+
                            </Stack>
                         </form>
                      </Grid>
@@ -434,9 +436,7 @@ export default function SettingsPage() {
                                                 {t.template_name}
                                              </Typography>
                                              <Stack direction="row" spacing={1} mt={1}>
-                                                {t.is_global && (
-                                                   <Chip label="System" size="small" sx={{ height: 18, fontSize: '9px', fontWeight: 700, bgcolor: '#F1F5F9' }} />
-                                                )}
+                                               
                                                 {isDefault && (
                                                    <Chip
                                                       icon={<CheckCircle2 size={10} color="#166534" />}
@@ -494,9 +494,26 @@ export default function SettingsPage() {
                                  </Typography>
                               </Stack>
                               {previewTemplate && (
-                                 <Typography variant='subtitle2' color='primary' fontWeight='800' sx={{ fontSize: '0.8rem' }}>
-                                    {previewTemplate.template_name}
-                                 </Typography>
+                                 <Stack direction="row" spacing={2} alignItems="center">
+                                    <Typography variant='subtitle2' color='primary' fontWeight='800' sx={{ fontSize: '0.8rem' }}>
+                                       {previewTemplate.template_name}
+                                    </Typography>
+                                    <Button
+                                       size="small"
+                                       variant="outlined"
+                                       startIcon={<Printer size={14} />}
+                                       onClick={() => {
+                                          const iframe = document.getElementById(`template-preview-${previewTemplate._id}`) as HTMLIFrameElement;
+                                          if (iframe && iframe.contentWindow) {
+                                             iframe.contentWindow.focus();
+                                             iframe.contentWindow.print();
+                                          }
+                                       }}
+                                       sx={{ borderRadius: '6px', textTransform: 'none', py: 0.25, px: 1, fontSize: '0.75rem' }}
+                                    >
+                                       Print
+                                    </Button>
+                                 </Stack>
                               )}
                            </Box>
 
@@ -535,6 +552,7 @@ export default function SettingsPage() {
                                              transformOrigin: 'top center',
                                           }}>
                                           <iframe
+                                             id={`template-preview-${previewTemplate._id}`}
                                              title={`template-preview-${previewTemplate._id}`}
                                              srcDoc={previewTemplate.html_content}
                                              onLoad={handlePreviewLoad}
@@ -553,6 +571,7 @@ export default function SettingsPage() {
                                           backgroundColor: 'white',
                                        }}>
                                        <iframe
+                                          id={`template-preview-${previewTemplate._id}`}
                                           title={`template-preview-${previewTemplate._id}`}
                                           srcDoc={previewTemplate.html_content}
                                           style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'white' }}

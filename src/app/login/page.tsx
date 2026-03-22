@@ -38,7 +38,7 @@ const LoginPage = () => {
             md={6}
             lg={7}
             sx={{
-               background: 'linear-gradient(135deg, #2F5FA5 0%, #5CC6C4 100%)',
+               background: "#2F5FA5",
                display: { xs: 'none', sm: 'flex' },
                flexDirection: 'column',
                alignItems: 'center',
@@ -99,12 +99,12 @@ const LoginPage = () => {
                </Typography>
 
                <Box sx={{ mt: 8, display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', p: 2, borderRadius: 2, backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                     <Sparkles size={20} style={{ marginBottom: 8 }} />
+                  <Box display={"flex"} alignItems={"center"} gap={1} sx={{ bgcolor: 'rgba(255,255,255,0.1)', p: 2, borderRadius: 2, backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                     <Sparkles size={20} />
                      <Typography variant="body2" fontWeight="600">AI Analytics</Typography>
                   </Box>
-                  <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', p: 2, borderRadius: 2, backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                     <Sparkles size={20} style={{ marginBottom: 8 }} />
+                  <Box display={"flex"} alignItems={"center"} gap={1} sx={{ bgcolor: 'rgba(255,255,255,0.1)', p: 2, borderRadius: 2, backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                     <Sparkles size={20} />
                      <Typography variant="body2" fontWeight="600">HIPAA Ready</Typography>
                   </Box>
                </Box>

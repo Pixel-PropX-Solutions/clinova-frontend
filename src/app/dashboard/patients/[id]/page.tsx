@@ -209,16 +209,7 @@ export default function PatientProfilePage() {
                      </Grid>
                   </Grid>
                </Grid>
-               <Grid item xs={12} md="auto">
-                  <Button
-                     variant="contained"
-                     fullWidth={isMobile}
-                     startIcon={<Printer size={18} />}
-                     sx={{ borderRadius: '12px', px: 3, height: 48 }}
-                  >
-                     Export Summary
-                  </Button>
-               </Grid>
+               
             </Grid>
          </Card>
 
@@ -295,8 +286,6 @@ export default function PatientProfilePage() {
                            <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>VISIT DATE</TableCell>
                            <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>CLINICIAN</TableCell>
                            {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>SPECIALTY</TableCell>}
-                           <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>PRIMARY DIAGNOSIS</TableCell>
-                           {!isTablet && <TableCell sx={{ fontWeight: '700', color: '#64748B' }}>METHOD</TableCell>}
                            <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>FEES</TableCell>
                            <TableCell align='right' sx={{ fontWeight: '700', color: '#64748B' }}>ACTIONS</TableCell>
                         </TableRow>
@@ -437,7 +426,6 @@ export default function PatientProfilePage() {
 
                               <Grid item xs={12}>
                                  <Box sx={{ bgcolor: '#F8FAFC', p: 1.5, borderRadius: '12px', mt: 1.5 }}>
-                                    <Typography variant="caption" color="textSecondary" display="block" gutterBottom>Primary Diagnosis</Typography>
                                     <Typography variant="body2" color="#475569" fontWeight="600">
                                        {visit.disease || visit.diagnosis || 'No diagnosis recorded'}
                                     </Typography>

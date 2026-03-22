@@ -35,16 +35,13 @@ import {
 } from 'lucide-react';
 import { useSearchPatient, useCreatePatient } from '@/hooks/api/usePatients';
 import { useCreateVisit } from '@/hooks/api/useVisits';
-import { useTemplates } from '@/hooks/api/useTemplates';
 import { useClinicProfile } from '@/hooks/api/useSettings';
-import { generateAndPrintPDF, generatePDF } from '@/hooks/api/usePDF';
+import { generateAndPrintPDF } from '@/hooks/api/usePDF';
 import BackDropLoading from '@/container/BackdropLoader';
 
 export default function PatientsPage() {
    const router = useRouter();
    const theme = useTheme();
-   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
    const [isNavigating, startNavigation] = React.useTransition();
 
    const [formState, setFormState] = useState({
@@ -59,12 +56,11 @@ export default function PatientsPage() {
       payment_method: 'Cash',
       template_id: '',
    });
-   const [doctors, setDoctors] = useState<{ fee: number; name: string }[]>([]);
+   const [doctors, setDoctors] = useState<{ fee: number; name: string; specialization?: string }[]>([]);
 
    const [queryPhone, setQueryPhone] = useState('');
    const [patientId, setPatientId] = useState<string | null>(null);
 
-   const { data: templates } = useTemplates();
    const { data: clinic } = useClinicProfile();
    const {
       data: patientData,
@@ -78,7 +74,6 @@ export default function PatientsPage() {
    const feeSuggestions = Array.from(
       new Set(
          [
-            clinic?.default_doctor_fee,
             selectedDoctor?.fee,
             ...doctors.map((d) => d.fee),
          ]
@@ -117,36 +112,29 @@ export default function PatientsPage() {
 
       if (doctors.length === 1) {
          const onlyDoctor = doctors[0];
-         const doctorName = clinic.default_doctor_name || onlyDoctor.name;
-         const doctorFee =
-            typeof clinic.default_doctor_fee === 'number'
-               ? clinic.default_doctor_fee
-               : onlyDoctor.fee;
 
          setFormState((prev) => ({
             ...prev,
-            doctor: prev.doctor || doctorName || '',
+            doctor: prev.doctor || onlyDoctor.name || '',
+            specialization: prev.specialization || onlyDoctor.specialization || '',
             fees:
                prev.fees ||
-               (typeof doctorFee === 'number' ? String(doctorFee) : ''),
+               (typeof onlyDoctor.fee === 'number' ? String(onlyDoctor.fee) : ''),
          }));
          return;
       }
 
-      const defaultDoctor = doctors.find(
-         (doctor) => doctor.name === clinic.default_doctor_name,
-      );
+      const defaultDoctor = doctors[0];
 
       setFormState((prev) => ({
          ...prev,
          doctor: prev.doctor || defaultDoctor?.name || '',
+         specialization: prev.specialization || defaultDoctor?.specialization || '',
          fees:
             prev.fees ||
             (typeof defaultDoctor?.fee === 'number'
                ? String(defaultDoctor.fee)
-               : typeof clinic.default_doctor_fee === 'number'
-                  ? String(clinic.default_doctor_fee)
-                  : ''),
+               : ''),
       }));
    }, [clinic, doctors]);
 
@@ -199,6 +187,7 @@ export default function PatientsPage() {
       setFormState((prev) => ({
          ...prev,
          doctor: doctorName,
+         specialization: doctorDetails?.specialization || '',
          fees:
             typeof doctorDetails?.fee === 'number'
                ? String(doctorDetails.fee)
@@ -516,7 +505,6 @@ export default function PatientsPage() {
                                     }
                                  >
                                     <MenuItem value='Cash'>Cash</MenuItem>
-                                    <MenuItem value='Card'>Card</MenuItem>
                                     <MenuItem value='UPI'>UPI / Online</MenuItem>
                                  </Select>
                               </FormControl>
@@ -565,32 +553,6 @@ export default function PatientsPage() {
                         </Stack>
                      </CardContent>
                   </Card>
-
-                  {templates && templates.length > 0 && (
-                     <Card sx={{ borderRadius: '24px', border: '2px dashed #E3EEF7', boxShadow: 'none' }}>
-                        <CardContent sx={{ p: 4 }}>
-                           <Typography variant="h6" fontWeight="700" mb={2}>Print Settings</Typography>
-                           <FormControl fullWidth variant="outlined">
-                              <InputLabel>Preferred Template</InputLabel>
-                              <Select
-                                 name='template_id'
-                                 value={formState.template_id}
-                                 label='Preferred Template'
-                                 onChange={handleChange as any}
-                              >
-                                 {templates.map((t: any) => (
-                                    <MenuItem key={t._id} value={t._id}>
-                                       {t.template_name} {t.is_global ? '⭐' : ''}
-                                    </MenuItem>
-                                 ))}
-                              </Select>
-                           </FormControl>
-                           <Typography variant="caption" color="textSecondary" sx={{ mt: 2, display: 'block' }}>
-                              Visit slips are generated as PDF files and ready for thermal or standard internal printing.
-                           </Typography>
-                        </CardContent>
-                     </Card>
-                  )}
                </Stack>
             </Grid>
          </Grid>
